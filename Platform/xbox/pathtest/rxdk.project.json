@@ -1,0 +1,9 @@
+{
+  "name": "pathtest", "type": "executable",
+  "sources": [ "pathtest.cpp" ],
+  "cppStandard": "c++23", "exceptions": false,
+  "libraries": [ "libd3d8", "libd3dx8", "libxapi", "libc", "libcpp", "libkernel" ],
+  "outputDir": "out", "createIso": true,
+  "deployPaths": [ "dc_data" ], "forceCopy": true,
+  "imageBuild": { "stackSize": 65536, "debug": true, "noLogo": true, "noLibWarn": true }
+}

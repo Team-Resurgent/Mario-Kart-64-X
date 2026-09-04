@@ -1,0 +1,23 @@
+{
+  "name": "mk64rendertest",
+  "type": "executable",
+  "sources": [
+    "../rendertest.cpp",
+    "../gfx_nv2a.cpp",
+    "../kos_xbox.c",
+    "../../../src/gfx/gfx_cc.c"
+  ],
+  "includePaths": [ "..", "../../../include", "../../../src", "../../../src/gfx", "../../../src/racing" ],
+  "defines": [
+    "TARGET_XBOX=1", "NON_MATCHING=1", "VERSION_US=1",
+    "F3DEX_GBI=1", "F3D_OLD=1", "_LANGUAGE_C=1", "_FINALROM=1", "SINCOSS_USE_FSCA=0"
+  ],
+  "compileFlags": [ "-Wno-int-conversion", "-Wno-incompatible-pointer-types" ],
+  "cppStandard": "c++23",
+  "exceptions": false,
+  "libraries": [ "libd3d8", "libd3dx8", "libxgraphics", "libdsound", "libxapi", "libc", "libcpp", "libkernel" ],
+  "outputDir": "out",
+  "createIso": true,
+  "imageBuild": { "stackSize": 262144, "debug": true, "noLogo": true, "noLibWarn": true,
+                  "testName": "MK64 NV2A Render Test", "testId": "0xffff0301", "testVersion": "1" }
+}
