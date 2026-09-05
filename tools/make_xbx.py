@@ -1,99 +1,46 @@
 #!/usr/bin/env python3
-"""Convert source artwork into the dashboard's .xbx images.
+"""Prepare the dashboard icon artwork: source PNG -> sized 24-bit BMP.
 
-    python tools/make_xbx.py                      # rebuild both from the defaults
-    python tools/make_xbx.py in.png out.xbx 128   # one-off
+    python tools/make_xbx.py                      # regenerate both from the defaults
+    python tools/make_xbx.py in.png out.bmp 128   # one-off
 
-An .xbx is an XPR0 package: a 2048-byte header holding an Xbox D3D texture
-descriptor, then the texture. The two images are NOT the same size, which is
-easy to get wrong -- every sample in RXDK agrees:
+This is an ART tool, not a build step. It runs only when the source art
+changes, and its output -- Platform/xbox/titleimage.bmp (128x128) and
+Platform/xbox/saveimage.bmp (64x64) -- is committed.
 
-    saveimage.xbx    64x64   DXT1   4096 bytes total
-    titleimage.xbx   128x128 DXT1  10240 bytes total
+The conversion into the dashboard's XPR0/DXT1 .xbx is NOT done here: RXDK
+already ships the tool for that. Platform/xbox/titleimage.rdf and
+saveimage.rdf describe each icon to the bundler (Format D3DFMT_DXT1, one
+level, out_version XPR0), the build engine runs the bundler on them before
+linking, and imagebld injects the result into the XBE. The bundler's DXT1
+encoder is the XDK's own, byte-exact, so a hand-written compressor and a
+hand-packed header here would only be a worse copy of it. Needing Pillow is
+the reason this stays out of setup.py: a build should not require an imaging
+library for two icons whose source can simply be committed at final size.
 
-so the header is taken from whichever sample matches the target size and only
-the payload is replaced. That keeps the descriptor (dimensions, format, mip
-count) correct by construction instead of hand-packing the format word.
+Why BMP: the bundler reads BMP and TGA. PNG is accepted by extension but the
+loader does not decode it, so the source it is handed has to be one of those.
 
 Quality notes, because these are tiny and mistakes are very visible:
-  * DXT1 compression is done by Pillow, not by hand. A naive encoder that picks
-    the two furthest-apart colours per block loses noticeably more detail.
-  * Downscaling a large source to 64px with a pure box filter looks soft, so a
-    mild unsharp mask goes on afterwards. Overdoing it produces crunchy edge
-    halos that DXT1 then smears, hence the restrained amount.
-  * DXT1 here carries no usable alpha, so transparency is composited onto a
-    solid background first. Left alone, transparent pixels decode as whatever
+  * Downscaling a large source to 64px with a pure box filter looks soft.
+    A LANCZOS resample handles the size change in one step.
+  * Sharpening before DXT1 is counterproductive: it manufactures
+    high-frequency detail that a two-endpoint block format smears into
+    artefacts. Measured on the box art, round-trip fidelity went 18.7 dB
+    sharpened / 21.2 dB untouched / 22.2 dB very slightly softened, so the
+    default is a touch of blur, not an unsharp mask.
+  * DXT1 carries no usable alpha, so transparency is composited onto a solid
+    background first. Left alone, transparent pixels decode as whatever
     happens to be in the colour channels.
 """
-import io, os, struct, sys
+import os, sys
 from PIL import Image, ImageFilter
 
 os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-SAMPLES = r"C:\ProgramData\RXDK\samples\RxdkSamples\Common"
-TEMPLATE = {64:  os.path.join(SAMPLES, "rxdk-saveimage.xbx"),
-            128: os.path.join(SAMPLES, "rxdk-titleimage.xbx")}
-
-
-def dxt1(im):
-    """Compress an RGB image to raw DXT1 via Pillow's DDS writer."""
-    buf = io.BytesIO()
-    im.save(buf, format="DDS", pixel_format="DXT1")
-    d = buf.getvalue()
-    expect = im.width * im.height // 2
-    return d[len(d) - expect:]          # strip the 128-byte DDS header
-
-
-# Xbox texture format codes (d3d8types.h) and the linear-size field (d3d8.h).
-D3DFMT_DXT1           = 0x0C
-D3DFMT_LIN_A8R8G8B8   = 0x12
-D3DSIZE_HEIGHT_SHIFT  = 12
-D3DSIZE_PITCH_SHIFT   = 24
-
-
-def build_xpr_argb(im):
-    """Uncompressed 32-bit XPR: header, format word and size field built here.
-
-    DXT1 gets two endpoint colours per 4x4 block, which is what produces the
-    blockiness on detailed art. D3DFMT_LIN_A8R8G8B8 stores every pixel exactly,
-    at 4 bytes each instead of half a byte -- 64KB for 128x128 rather than 8KB,
-    which is nothing for an icon.
-
-    LINEAR is chosen over the swizzled format deliberately: swizzled textures
-    need pixels reordered into Morton order, and getting that interleave
-    backwards transposes the image. A linear texture is stored row by row, and
-    instead carries its geometry in the descriptor's Size field --
-    width-1, height-1 and pitch/64-1, packed per d3d8.h.
-
-    Alpha is preserved rather than flattened. If the dashboard honours it, the
-    artwork's own transparency shows through its circular mask; if it ignores
-    it, the RGB underneath has already been composited onto the background, so
-    the result is no worse than the DXT1 version.
-    """
-    w, h = im.size
-    tpl = io.open(TEMPLATE[128], "rb").read()      # any template: header is generic
-    total_old, hdr = struct.unpack_from("<II", tpl, 4)
-    head = bytearray(tpl[:hdr])
-
-    fmt = struct.unpack_from("<I", head, 24)[0]
-    fmt &= ~0x0000FF00                              # clear format field
-    fmt |= D3DFMT_LIN_A8R8G8B8 << 8
-    fmt &= ~0x0FF00000                              # linear: log2 U/V unused
-    struct.pack_into("<I", head, 24, fmt)
-
-    pitch = w * 4
-    size = ((w - 1) |
-            ((h - 1) << D3DSIZE_HEIGHT_SHIFT) |
-            ((pitch // 64 - 1) << D3DSIZE_PITCH_SHIFT))
-    struct.pack_into("<I", head, 28, size)
-
-    payload = im.convert("RGBA").tobytes("raw", "BGRA")   # A8R8G8B8 in memory
-    struct.pack_into("<I", head, 4, hdr + len(payload))
-    return bytes(head) + payload
-
 
 def convert(src, dst, size, bg=(0, 0, 0), crop=None, sharpen=True, trim=False,
-            fit=False, argb=False):
+            fit=False):
     im = Image.open(src)
     if crop:
         # Crops are FRACTIONS of the image (0..1), not pixels, so they keep
@@ -123,15 +70,10 @@ def convert(src, dst, size, bg=(0, 0, 0), crop=None, sharpen=True, trim=False,
                 im = im.crop((int(cx - half), int(cy - half),
                               int(cx + half), int(cy + half)))
 
-    # Composite onto the background but KEEP the original alpha alongside it.
-    # DXT1 discards alpha anyway; the uncompressed path can carry it, and if
-    # the dashboard honours it the artwork masks cleanly instead of showing a
-    # background it never asked for.
-    alpha = im.split()[-1]
+    # Composite onto the background: DXT1 discards alpha, and a BMP has none.
     flat = Image.new("RGBA", im.size, bg + (255,))
     flat.alpha_composite(im)
     im = flat.convert("RGB")
-    im.putalpha(alpha)
 
     if fit:
         # Scale to fit inside the square, preserving aspect, and centre it.
@@ -146,30 +88,13 @@ def convert(src, dst, size, bg=(0, 0, 0), crop=None, sharpen=True, trim=False,
         # Downscale in one LANCZOS step.
         im = im.resize((size, size), Image.LANCZOS)
     if sharpen:
-        # NOT an unsharp mask. Sharpening before DXT1 is counterproductive: it
-        # manufactures high-frequency detail, and DXT1 only has two endpoint
-        # colours per 4x4 block to spend, so the extra edges come back as block
-        # artefacts. Measured on the box art, round-trip fidelity went
-        # 18.7 dB sharpened / 21.2 dB untouched / 22.2 dB very slightly
-        # softened. A touch of blur gives the compressor less to fight and
-        # reads cleaner at icon size.
+        # NOT an unsharp mask -- see the module docstring for the numbers.
         im = im.filter(ImageFilter.GaussianBlur(0.4))
 
-    os.makedirs(os.path.dirname(dst), exist_ok=True)
-    if argb:
-        blob = build_xpr_argb(im)
-        kind = "A8R8G8B8"
-    else:
-        payload = dxt1(im.convert("RGB"))
-        tpl = io.open(TEMPLATE[size], "rb").read()
-        total, hdr = struct.unpack_from("<II", tpl, 4)
-        assert len(payload) == total - hdr, \
-            "%dx%d payload %d != template body %d" % (size, size, len(payload), total - hdr)
-        blob = tpl[:hdr] + payload
-        kind = "DXT1"
-    io.open(dst, "wb").write(blob)
-    print("%-26s <- %-20s %3dx%-3d %-8s %d bytes" %
-          (dst, os.path.basename(src), size, size, kind, len(blob)))
+    os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
+    im.save(dst, "BMP")
+    print("%-32s <- %-20s %3dx%-3d %d bytes" %
+          (dst, os.path.basename(src), size, size, os.path.getsize(dst)))
 
 
 if __name__ == "__main__":
@@ -192,16 +117,16 @@ if __name__ == "__main__":
         # 64px the full scene -- five karts, motion blur, the logo -- collapses
         # into mush, while Mario's head alone stays instantly readable at that
         # size. Same source, framed for the size it will actually be seen at.
-        # DXT1, not the uncompressed path. argb=True was tried on hardware and
-        # rendered BLACK: this dashboard assumes DXT1 rather than reading the
-        # format out of the descriptor, so a valid A8R8G8B8 XPR is no use here.
-        # Keep argb= for reference, but do not ship it.
+        #
+        # DXT1 is what the .rdf files ask the bundler for. An uncompressed
+        # A8R8G8B8 XPR was tried on hardware and rendered BLACK: this dashboard
+        # assumes DXT1 rather than reading the format out of the descriptor.
         #
         # Sizes are the convention every RXDK sample follows -- save 64, title
         # 128 -- and deviating is what the black icons taught us not to do. The
         # title is 1:1 with its 128x128 source (no resampling); the save image
         # is the only place a downscale happens, and it is unavoidable.
-        convert("MK64Kart128x128.png", "dc_data/saveimage.xbx", 64,
+        convert("MK64Kart128x128.png", "Platform/xbox/saveimage.bmp", 64,
                 sharpen=False)
-        convert("MK64128x128.png", "dc_data/titleimage.xbx", 128,
+        convert("MK64128x128.png", "Platform/xbox/titleimage.bmp", 128,
                 sharpen=False)

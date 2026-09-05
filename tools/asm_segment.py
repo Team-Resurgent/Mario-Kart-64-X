@@ -9,8 +9,12 @@ gen_asmwrappers.py; see that file for why each is needed.
 import io, os, re, subprocess, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import coff_section
+import hostenv
 
-ZIG = os.path.expandvars(r"%LOCALAPPDATA%\RXDK\zig\0.16.0\zig-x86_64-windows-0.16.0\zig.exe")
+ZIG = hostenv.zig()
+if not ZIG:
+    raise SystemExit("asm_segment: no zig found (RXDK_ZIG, %s, or PATH)"
+                     % hostenv.zig_install_root())
 BS  = chr(92)
 ROOT = os.path.abspath(".")
 

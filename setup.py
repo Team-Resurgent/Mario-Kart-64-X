@@ -53,11 +53,24 @@ re-running is cheap and safe. Use --force to rebuild regardless.
 """
 import argparse, glob, hashlib, io, os, re, shutil, subprocess, sys
 
+# Step headers must reach the terminal BEFORE the child tool's output, and
+# reach a log file at all while the run is in progress. With stdout redirected
+# Python block-buffers it, so `python setup.py > log` shows the children's
+# lines (they write to the file directly) but not which step they belong to
+# until the buffer fills. Line-buffer it, whatever it is connected to.
+sys.stdout.reconfigure(line_buffering=True)
+
 ROOT = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import hostenv                      # noqa: E402  (tools/hostenv.py)
+
 ROM = "baserom.us.z64"
 ROM_MD5 = "3a67d9986f54eb282924fca4cd5f6dff"
-RXDK = r"C:\ProgramData\RXDK\tools\Rxdk.Cli.exe"
-EXE = ".exe" if os.name == "nt" else ""
+# Resolved per platform (ProgramData / XDG / Application Support) and via the
+# same RXDK_STAGED_TOOLS override the extensions honour -- see tools/hostenv.py.
+RXDK = hostenv.rxdk_cli()
+EXE = hostenv.EXE
+TORCH_BUILD = "tools/torch/build"
 
 # torch extracts the ROM into ~180 source files. It is fetched and built by
 # this script rather than carried as a git submodule: a submodule would still
@@ -86,14 +99,14 @@ def torch_exe():
     bare "FileNotFoundError: [WinError 2]" that names nothing useful. Every
     other tool this script invokes is absolute for the same reason.
     """
-    for p in ("tools/torch/build-win/Release/torch.exe",
-              "tools/torch/build-win/torch.exe",
-              "tools/torch/build/Release/torch",
-              "tools/torch/build/torch",
-              "tools/torch/torch.exe",
-              "tools/torch/torch"):
-        if os.path.exists(p):
-            return os.path.abspath(p)
+    # Multi-config generators (Visual Studio, Xcode) nest the config name;
+    # single-config ones (Makefiles, Ninja) do not. build-win is the directory
+    # older versions of this script used on Windows -- still honoured so an
+    # existing checkout is not rebuilt for nothing.
+    for d in (TORCH_BUILD, "tools/torch/build-win", "tools/torch"):
+        for p in (d + "/Release/torch" + EXE, d + "/torch" + EXE):
+            if os.path.isfile(p):
+                return os.path.abspath(p)
     return None
 
 
@@ -152,15 +165,32 @@ def ensure_torch():
 
     need("cmake", "build torch")
     print("    building torch (one-off, a few minutes)")
-    sh("cmake", "-S", "tools/torch", "-B", "tools/torch/build-win")
-    sh("cmake", "--build", "tools/torch/build-win", "--config", "Release")
+    # CMAKE_BUILD_TYPE is what single-config generators (Unix Makefiles,
+    # Ninja) read; --config is what multi-config ones (Visual Studio, Xcode)
+    # read. Passing both is harmless and means the same two commands work on
+    # every platform without asking which generator CMake picked.
+    r = subprocess.run(["cmake", "-S", "tools/torch", "-B", TORCH_BUILD,
+                        "-DCMAKE_BUILD_TYPE=Release"], cwd=ROOT)
+    if r.returncode != 0:
+        raise SystemExit(
+            "%s! cmake could not configure torch.%s\n\n"
+            "  torch is a C++20 project and needs a full native toolchain:\n"
+            "    Windows  Visual Studio 2022 with the 'Desktop development\n"
+            "             with C++' workload (the Build Tools edition is\n"
+            "             enough; CMake finds it without any PATH setup)\n"
+            "    macOS    Xcode command line tools: xcode-select --install\n"
+            "    Linux    gcc or clang, e.g. apt install build-essential\n\n"
+            "  The message above from CMake says which part is missing."
+            % (RED, OFF))
+    sh("cmake", "--build", TORCH_BUILD, "--config", "Release", "--parallel")
 
     t = torch_exe()
     if not t:
         raise SystemExit(
             "torch built without error but no torch binary was found under\n"
-            "tools/torch. Look in tools/torch/build-win for it and, if it is\n"
-            "somewhere unexpected, add that path to torch_exe() in setup.py.")
+            "tools/torch. Look in %s for it and, if it is\n"
+            "somewhere unexpected, add that path to torch_exe() in setup.py."
+            % TORCH_BUILD)
     return t
 
 
@@ -212,7 +242,7 @@ def check_rom():
     print("  %sROM ok%s  (md5 %s)" % (GREEN, OFF, got))
 
 
-def build_steps(config):
+def build_steps(config, force=False):
     py = sys.executable
     aica_env = {"PYTHONPATH": os.path.join(ROOT, "tools", "aica")}
     objdir = "out/" + config
@@ -458,28 +488,49 @@ def build_steps(config):
             "\n".join(targets) + "\n")
         print("    %s incbin targets from data/**/*.s" % format(len(targets), ","))
 
+    # The six helpers are single-TU C99 programs. Compile them directly rather
+    # than through tools/Makefile: that needs make AND gcc on PATH, and a
+    # Windows machine that runs RXDK has neither as a rule -- it has zig,
+    # which is a complete Clang. hostenv.cc_command() prefers RXDK's own zig,
+    # then cc/gcc/clang, so the same code path works on every host without a
+    # MinGW or MSYS2 install. Same sources and flags as the Makefile, which
+    # is kept for anyone who prefers it.
+    HELPERS = [
+        ("mio0",                 ["libmio0.c"],               ["-DMIO0_STANDALONE"]),
+        ("n64graphics",          ["n64graphics.c", "utils.c"], ["-DN64GRAPHICS_STANDALONE"]),
+        ("displaylist_packer",   ["displaylist_packer.c"],    ["-Wno-unused-result"]),
+        ("n64cksum",             ["n64cksum.c", "utils.c"],    ["-DN64CKSUM_STANDALONE"]),
+        ("tkmk00",               ["libtkmk00.c", "utils.c"],   ["-DTKMK00_STANDALONE"]),
+        ("extract_data_for_mio", ["extract_data_for_mio.c"],  []),
+    ]
+    CFLAGS = ["-I", ".", "-Wall", "-Wextra", "-Wno-unused-parameter",
+              "-std=c99", "-O2", "-s"]
+
     def tools_step():
-        # MinGW installs call it mingw32-make; MSYS2 and w64devkit call it
-        # make; some BSD-ish setups gmake. Any of them builds tools/Makefile.
-        make = next((m for m in ("make", "mingw32-make", "gmake")
-                     if shutil.which(m)), None)
-        if not make:
+        cc = hostenv.cc_command()
+        if cc is None:
             raise SystemExit(
-                "%s! no make found (tried make, mingw32-make, gmake).%s\n\n"
+                "%s! no C compiler found.%s\n\n"
                 "  extract_assets.py shells out to six native helpers --\n"
                 "  n64graphics, mio0, tkmk00, n64cksum, extract_data_for_mio\n"
                 "  and displaylist_packer. Their C sources ARE in the repo but\n"
-                "  the binaries are not, so they have to be compiled once:\n\n"
-                "    make -C tools\n\n"
-                "  On Windows the DC port ships w64devkit for exactly this;\n"
-                "  any MinGW/MSYS2 install with make and gcc will do.\n"
-                % (RED, OFF))
-        # Name the programs rather than using `all`: that target also builds
-        # torch, by shelling out to a hardcoded `make`, which fails on a MinGW
-        # install where the binary is mingw32-make. torch is a CMake project
-        # with its own build step below, so it does not belong here anyway.
-        sh(make, "-C", "tools", "mio0", "n64graphics", "displaylist_packer",
-           "n64cksum", "tkmk00", "extract_data_for_mio")
+                "  the binaries are not, so they have to be compiled once.\n\n"
+                "  Looked for: $CC, RXDK's zig (%s),\n"
+                "  then cc, gcc, clang on PATH. Installing RXDK is the easy\n"
+                "  fix; it brings zig, and zig cc compiles these.\n"
+                % (RED, OFF, hostenv.zig_install_root()))
+        print("    compiler: %s" % " ".join(cc))
+        tools = os.path.join(ROOT, "tools")
+        for name, srcs, flags in HELPERS:
+            out = name + EXE
+            if not force and os.path.exists(os.path.join(tools, out)):
+                continue
+            cmd = cc + CFLAGS + flags + srcs + ["-o", out]
+            print(DIM + "    $ " + " ".join(cmd) + OFF)
+            r = subprocess.run(cmd, cwd=tools)
+            if r.returncode != 0:
+                raise SystemExit("%s! step failed: compiling tools/%s%s"
+                                 % (RED, name, OFF))
 
     return [
         Step("create the output directories the extractors assume",
@@ -633,14 +684,11 @@ def build_steps(config):
              segblobs_step,
              "must precede build pass 1: it writes sources the build compiles"),
 
-        # imagebld needs these to stamp the XBE, and dc_data is gitignored, so
-        # a clean tree has neither. The source art IS published at the repo
-        # root; make_xbx.py converts it to the dashboard's XPR0 format.
-        Step("make_xbx: dashboard title and save icons",
-             ["dc_data/titleimage.xbx", "dc_data/saveimage.xbx"],
-             lambda: sh(py, "tools/make_xbx.py"),
-             "imagebld refuses to run without them"),
-
+        # The dashboard icons are NOT a step here. Platform/xbox/*.rdf describe
+        # them to the RXDK bundler, the build engine runs it before linking
+        # (rxdk.project.json "resources"), and imagebld injects the result.
+        # The committed inputs are 24-bit BMPs at final size; tools/make_xbx.py
+        # regenerates those from the PNG art when the art changes.
         Step("RXDK build (pass 1: objects)",
              [objdir + "/Build"],
              lambda: sh(RXDK, "build", "--project-root", ".",
@@ -761,7 +809,7 @@ def main():
     print("\n%sMario Kart 64 -- Xbox%s   setup, %s\n" % (GREEN, OFF, args.config))
     check_rom()
 
-    steps = build_steps(args.config)
+    steps = build_steps(args.config, args.force)
     if args.skip_build:
         steps = [s for s in steps if not s.name.startswith("RXDK build")]
 
@@ -787,7 +835,9 @@ def main():
     if not os.path.exists(RXDK) and not args.skip_build:
         raise SystemExit(
             "%s! RXDK not found at %s%s\n"
-            "  Install it, or pass --skip-build to stop after asset generation."
+            "  Install it (the VS Code or Visual Studio extension stages it\n"
+            "  there), set RXDK_STAGED_TOOLS if yours lives elsewhere, or pass\n"
+            "  --skip-build to stop after asset generation."
             % (RED, RXDK, OFF))
 
     for i, s in enumerate(steps, 1):

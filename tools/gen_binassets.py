@@ -13,8 +13,10 @@ rule does.
 """
 import io, json, os, re, subprocess, sys, glob
 
-N64G = os.path.abspath("tools/n64graphics.exe")
-MIO0 = os.path.abspath("tools/mio0.exe")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import hostenv
+N64G = os.path.join(hostenv.ROOT, "tools", "n64graphics" + hostenv.EXE)
+MIO0 = os.path.join(hostenv.ROOT, "tools", "mio0" + hostenv.EXE)
 FMTS = ("rgba16","rgba32","ia16","ia8","ia4","ia1","i8","i4","ci8","ci4")
 
 # name -> format, and dir -> palette, from the per-asset JSONs

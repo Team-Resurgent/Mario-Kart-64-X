@@ -209,3 +209,9 @@ nul
 
 # torch is fetched by setup.py, never committed
 tools/torch/
+
+# The bundler writes the dashboard icons here from Platform/xbox/*.rdf on every
+# build (setup.py / Rxdk.Cli build); the committed inputs are the .bmp + .rdf.
+/Platform/xbox/gen/*.xbx
+/Platform/xbox/gen/titleimage.h
+/Platform/xbox/gen/saveimage.h
