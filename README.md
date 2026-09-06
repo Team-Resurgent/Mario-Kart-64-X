@@ -19,11 +19,21 @@ yourself, or don't play it.
 | | |
 |---|---|
 | **The ROM** | Mario Kart 64 (USA), **big-endian `.z64`**, named exactly `baserom.us.z64`, in the repo root. md5 `3a67d9986f54eb282924fca4cd5f6dff` |
-| **[RXDK](https://github.com/Team-Resurgent/RXDK-VS20XX)** | The Xbox toolchain. `Rxdk.Cli.exe` is expected at `C:\ProgramData\RXDK\tools\` |
-| **Python 3** | Drives the asset pipeline |
+| **[RXDK](https://github.com/Team-Resurgent/RXDK-VS20XX)** | The Xbox toolchain, from either the VS Code or the Visual Studio extension. `setup.py` finds `Rxdk.Cli` where the extension staged it (`%ProgramData%\RXDK\tools` on Windows, `~/Library/Application Support/RXDK/tools` on macOS, `~/.local/share/rxdk/tools` on Linux) and honours `RXDK_STAGED_TOOLS` |
+| **Python 3** | Drives the asset pipeline. (Pillow is needed only by `tools/make_xbx.py`, the art tool that regenerates the committed dashboard-icon BMPs; the build itself does not import it) |
 | **git** | `setup.py` uses it to fetch `torch` on the first run |
-| **make + gcc** | MinGW-w64 or MSYS2. Builds six small native asset tools. `make`, `mingw32-make` and `gmake` are all accepted |
-| **CMake + Visual Studio 2022** | With the C++ workload — used once, to build `torch` |
+| **CMake** | Used once, to build `torch`. Optional: if none is on PATH, `setup.py` downloads Kitware's portable build into `tools/cmake-bin/` |
+
+Nothing else. The six small native asset tools are compiled by `setup.py`
+with RXDK's own `zig cc`, so no MinGW, MSYS2 or `make` install is needed.
+`$CC`, or `cc`/`gcc`/`clang` on PATH, are used if you prefer them.
+
+`torch` is a C++20 project. If a native toolchain is present it is used:
+Visual Studio 2022 with the "Desktop development with C++" workload (the free
+Build Tools edition is enough) on Windows, Xcode command line tools on macOS,
+gcc or clang on Linux. If there is none, `setup.py` builds torch with RXDK's
+zig instead, downloading the `ninja` build tool into `tools/ninja/` to drive
+CMake. So a Windows machine with no Visual Studio at all still builds.
 
 A `.n64` or `.v64` dump will **not** work. Those are byte-swapped, so every
 offset the extractors use lands in the wrong place. Convert to `.z64` first.
@@ -78,6 +88,7 @@ python setup.py --check        # list what is missing, change nothing
 python setup.py --force        # re-run every step, even satisfied ones
 python setup.py --skip-build   # generate assets, stop before RXDK
 python setup.py --config Debug # Debug instead of Release
+python setup.py --zig-torch    # build torch with RXDK's zig even if Visual Studio exists
 ```
 
 Re-running is cheap and safe. Steps that can be skipped declare their outputs

@@ -2,6 +2,10 @@
   "name": "mk64x",
   "type": "executable",
   "defaultConfiguration": "Release",
+  "resources": [
+    "Platform/xbox/titleimage.rdf",
+    "Platform/xbox/saveimage.rdf"
+  ],
   "configurations": {
     "Debug": {
       "configuration": "debug",
@@ -276,8 +280,8 @@
         "testName": "Mario Kart 64",
         "testId": "0xffff0401",
         "testVersion": "1",
-        "titleImage": "dc_data/titleimage.xbx",
-        "defaultSaveImage": "dc_data/saveimage.xbx"
+        "titleImage": "Platform/xbox/gen/titleimage.xbx",
+        "defaultSaveImage": "Platform/xbox/gen/saveimage.xbx"
       },
       "outputDir": "out\\Debug"
     },
@@ -554,8 +558,8 @@
         "testName": "Mario Kart 64",
         "testId": "0xffff0401",
         "testVersion": "1",
-        "titleImage": "dc_data/titleimage.xbx",
-        "defaultSaveImage": "dc_data/saveimage.xbx"
+        "titleImage": "Platform/xbox/gen/titleimage.xbx",
+        "defaultSaveImage": "Platform/xbox/gen/saveimage.xbx"
       },
       "outputDir": "out\\Release"
     }

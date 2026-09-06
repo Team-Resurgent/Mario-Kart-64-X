@@ -6,6 +6,7 @@
     python setup.py --skip-build   # regenerate assets, stop before RXDK
     python setup.py --force        # redo every step even if outputs exist
     python setup.py --config Debug # Debug instead of Release
+    python setup.py --zig-torch    # build torch with zig, not Visual Studio
 
 This project ships as SOURCE ONLY. Nothing ROM-derived is in the repository,
 so a clean clone will not build until you supply `baserom.us.z64` yourself and
@@ -53,11 +54,25 @@ re-running is cheap and safe. Use --force to rebuild regardless.
 """
 import argparse, glob, hashlib, io, os, re, shutil, subprocess, sys
 
+# Step headers must reach the terminal BEFORE the child tool's output, and
+# reach a log file at all while the run is in progress. With stdout redirected
+# Python block-buffers it, so `python setup.py > log` shows the children's
+# lines (they write to the file directly) but not which step they belong to
+# until the buffer fills. Line-buffer it, whatever it is connected to.
+sys.stdout.reconfigure(line_buffering=True)
+
 ROOT = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import hostenv                      # noqa: E402  (tools/hostenv.py)
+
 ROM = "baserom.us.z64"
 ROM_MD5 = "3a67d9986f54eb282924fca4cd5f6dff"
-RXDK = r"C:\ProgramData\RXDK\tools\Rxdk.Cli.exe"
-EXE = ".exe" if os.name == "nt" else ""
+# Resolved per platform (ProgramData / XDG / Application Support) and via the
+# same RXDK_STAGED_TOOLS override the extensions honour -- see tools/hostenv.py.
+RXDK = hostenv.rxdk_cli()
+EXE = hostenv.EXE
+TORCH_BUILD = "tools/torch/build"
+FORCE_ZIG_TORCH = False             # --zig-torch; see ensure_torch()
 
 # torch extracts the ROM into ~180 source files. It is fetched and built by
 # this script rather than carried as a git submodule: a submodule would still
@@ -86,14 +101,14 @@ def torch_exe():
     bare "FileNotFoundError: [WinError 2]" that names nothing useful. Every
     other tool this script invokes is absolute for the same reason.
     """
-    for p in ("tools/torch/build-win/Release/torch.exe",
-              "tools/torch/build-win/torch.exe",
-              "tools/torch/build/Release/torch",
-              "tools/torch/build/torch",
-              "tools/torch/torch.exe",
-              "tools/torch/torch"):
-        if os.path.exists(p):
-            return os.path.abspath(p)
+    # Multi-config generators (Visual Studio, Xcode) nest the config name;
+    # single-config ones (Makefiles, Ninja) do not. build-win is the directory
+    # older versions of this script used on Windows -- still honoured so an
+    # existing checkout is not rebuilt for nothing.
+    for d in (TORCH_BUILD, "tools/torch/build-win", "tools/torch"):
+        for p in (d + "/Release/torch" + EXE, d + "/torch" + EXE):
+            if os.path.isfile(p):
+                return os.path.abspath(p)
     return None
 
 
@@ -126,6 +141,143 @@ def patch_torch_cmake():
     print("    patched torch's CMakeLists.txt to link wininet")
 
 
+def have_native_cxx():
+    """Is there a C++ toolchain CMake's default generator will find?
+
+    Windows: CMake defaults to the Visual Studio generator and locates VS
+    through the installer's registry, so PATH says nothing -- ask vswhere
+    (installed with every VS 2017+ and Build Tools) whether an instance with
+    the C++ compiler component exists. `cl` on PATH (a developer prompt)
+    counts too. Elsewhere: a C++ compiler under one of its usual names.
+    """
+    if hostenv.WIN:
+        if shutil.which("cl"):
+            return True
+        pf86 = os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")
+        vswhere = os.path.join(pf86, "Microsoft Visual Studio", "Installer",
+                               "vswhere.exe")
+        if not os.path.exists(vswhere):
+            return False
+        r = subprocess.run(
+            [vswhere, "-latest", "-products", "*", "-requires",
+             "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+             "-property", "installationPath"],
+            capture_output=True, text=True)
+        return r.returncode == 0 and bool(r.stdout.strip())
+    return any(shutil.which(c) for c in ("c++", "g++", "clang++"))
+
+
+NINJA_VERSION = "1.12.1"
+NINJA_URL = ("https://github.com/ninja-build/ninja/releases/download/v%s/%s"
+             % (NINJA_VERSION, "%s"))
+
+
+def ensure_ninja():
+    """Return a ninja binary, downloading the release build if there is none.
+
+    The zig route needs a CMake generator that is not Visual Studio, and
+    Ninja is the one that works the same on every platform. It is a single
+    static executable published per OS by the ninja project, so fetching it
+    into tools/ninja/ (gitignored) is the same class of dependency as fetching
+    torch itself, only smaller.
+    """
+    found = shutil.which("ninja")
+    if found:
+        return found
+    local = os.path.join(ROOT, "tools", "ninja", "ninja" + EXE)
+    if os.path.exists(local):
+        return local
+
+    import platform, urllib.request, zipfile
+    arm = platform.machine().lower() in ("arm64", "aarch64")
+    if hostenv.WIN:
+        asset = "ninja-winarm64.zip" if arm else "ninja-win.zip"
+    elif hostenv.MAC:
+        asset = "ninja-mac.zip"                 # universal binary
+    else:
+        asset = "ninja-linux-aarch64.zip" if arm else "ninja-linux.zip"
+    url = NINJA_URL % asset
+    print("    fetching ninja %s (%s)" % (NINJA_VERSION, asset))
+    os.makedirs(os.path.dirname(local), exist_ok=True)
+    try:
+        with urllib.request.urlopen(url) as resp:
+            data = resp.read()
+    except Exception as e:
+        raise SystemExit(
+            "%s! could not download ninja from %s%s\n  (%s)\n"
+            "  Install ninja yourself and put it on PATH, then re-run."
+            % (RED, url, OFF, e))
+    with zipfile.ZipFile(io.BytesIO(data)) as z:
+        z.extract("ninja" + EXE, os.path.dirname(local))
+    if not hostenv.WIN:
+        os.chmod(local, 0o755)
+    return local
+
+
+CMAKE_VERSION = "3.31.5"
+CMAKE_URL = ("https://github.com/Kitware/CMake/releases/download/v%s/cmake-%s-%s"
+             % (CMAKE_VERSION, CMAKE_VERSION, "%s"))
+
+
+def ensure_cmake():
+    """Return a cmake binary, downloading Kitware's portable build if needed.
+
+    A machine with no Visual Studio usually has no CMake either. Kitware
+    publishes a self-contained archive per platform -- no installer, no
+    registry, just bin/cmake -- so it goes into tools/cmake-bin/ (gitignored)
+    the same way ninja does. ~50 MB, once.
+    """
+    found = shutil.which("cmake")
+    if found:
+        return found
+    root = os.path.join(ROOT, "tools", "cmake-bin")
+
+    def portable():
+        # Windows/Linux archives unpack to cmake-<ver>-<os>/bin/cmake; the
+        # macOS one is an app bundle with bin/ inside Contents/.
+        hits = glob.glob(os.path.join(root, "cmake-*", "bin", "cmake" + EXE))
+        hits += glob.glob(os.path.join(root, "cmake-*", "CMake.app", "Contents",
+                                       "bin", "cmake"))
+        return hits[0] if hits else None
+
+    cm = portable()
+    if cm:
+        return cm
+
+    import platform, tarfile, urllib.request, zipfile
+    arm = platform.machine().lower() in ("arm64", "aarch64")
+    if hostenv.WIN:
+        asset = "windows-arm64.zip" if arm else "windows-x86_64.zip"
+    elif hostenv.MAC:
+        asset = "macos-universal.tar.gz"
+    else:
+        asset = "linux-aarch64.tar.gz" if arm else "linux-x86_64.tar.gz"
+    url = CMAKE_URL % asset
+    print("    fetching cmake %s (%s, ~50 MB)" % (CMAKE_VERSION, asset))
+    os.makedirs(root, exist_ok=True)
+    try:
+        with urllib.request.urlopen(url) as resp:
+            data = resp.read()
+    except Exception as e:
+        raise SystemExit(
+            "%s! could not download cmake from %s%s\n  (%s)\n"
+            "  Install CMake yourself (cmake.org) and put it on PATH, then "
+            "re-run." % (RED, url, OFF, e))
+    if asset.endswith(".zip"):
+        with zipfile.ZipFile(io.BytesIO(data)) as z:
+            z.extractall(root)
+    else:
+        with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as t:
+            t.extractall(root)
+    cm = portable()
+    if not cm:
+        raise SystemExit("%s! cmake archive had an unexpected layout under %s%s"
+                         % (RED, root, OFF))
+    if not hostenv.WIN:
+        os.chmod(cm, 0o755)
+    return cm
+
+
 def ensure_torch():
     """Return a built torch, fetching and building it if necessary.
 
@@ -150,17 +302,69 @@ def ensure_torch():
 
     patch_torch_cmake()
 
-    need("cmake", "build torch")
+    cmake = ensure_cmake()
     print("    building torch (one-off, a few minutes)")
-    sh("cmake", "-S", "tools/torch", "-B", "tools/torch/build-win")
-    sh("cmake", "--build", "tools/torch/build-win", "--config", "Release")
+
+    # Two ways to build it. The native toolchain (MSVC / Xcode / gcc) is the
+    # one torch is developed against, so it is used when present. When it is
+    # not -- typically a Windows machine with no Visual Studio, where CMake
+    # fails with a wall of "Compiler: cl ... The system cannot find the file
+    # specified" -- the build falls back to the zig that RXDK already
+    # installed: zig cc/c++ is a complete Clang with its own libc++, and the
+    # only other thing CMake needs is a build tool, which ensure_ninja()
+    # downloads. CMake itself is downloaded too when absent (ensure_cmake).
+    # Nothing to install by hand either way.
+    #
+    # CMAKE_BUILD_TYPE is what single-config generators (Makefiles, Ninja)
+    # read; --config is what multi-config ones (Visual Studio, Xcode) read.
+    # Passing both is harmless and means the same commands work everywhere.
+    configure = [cmake, "-S", "tools/torch", "-B", TORCH_BUILD,
+                 "-DCMAKE_BUILD_TYPE=Release"]
+    ok = False
+    if have_native_cxx() and not FORCE_ZIG_TORCH:
+        ok = subprocess.run(configure, cwd=ROOT).returncode == 0
+        if not ok:
+            print("    %scmake could not configure torch with the system "
+                  "toolchain; trying zig%s" % (YELLOW, OFF))
+    if not ok:
+        zig = hostenv.zig()
+        if not zig:
+            raise SystemExit(
+                "%s! no C++ toolchain for torch.%s\n\n"
+                "  torch is a C++20 project. Either install RXDK (its zig is\n"
+                "  enough: setup.py builds torch with it) or a native one:\n"
+                "    Windows  Visual Studio 2022 with the 'Desktop development\n"
+                "             with C++' workload (the Build Tools edition is\n"
+                "             enough; CMake finds it without any PATH setup)\n"
+                "    macOS    Xcode command line tools: xcode-select --install\n"
+                "    Linux    gcc or clang, e.g. apt install build-essential\n"
+                % (RED, OFF))
+        ninja = ensure_ninja()
+        print("    building torch with zig (%s)" % zig)
+        # A generator switch needs a clean cache, and a half-configured MSVC
+        # tree must not be reused with a different compiler.
+        shutil.rmtree(TORCH_BUILD, ignore_errors=True)
+        # CMAKE_<LANG>_COMPILER accepts a list: the program plus its arguments.
+        # CMAKE_PROJECT_torch_INCLUDE splices tools/cmake/torch-zig.cmake into
+        # torch's configure right after project(); see that file for the two
+        # things Clang 21 needs changed. tools/cmake/HandleCompilerRT.cmake is
+        # the file torch include()s when it sees Clang on Windows.
+        sh(cmake, "-S", "tools/torch", "-B", TORCH_BUILD, "-G", "Ninja",
+           "-DCMAKE_MAKE_PROGRAM=" + ninja,
+           "-DCMAKE_C_COMPILER=%s;cc" % zig,
+           "-DCMAKE_CXX_COMPILER=%s;c++" % zig,
+           "-DCMAKE_BUILD_TYPE=Release",
+           "-DCMAKE_PROJECT_torch_INCLUDE="
+           + os.path.join(ROOT, "tools", "cmake", "torch-zig.cmake"))
+    sh(cmake, "--build", TORCH_BUILD, "--config", "Release", "--parallel")
 
     t = torch_exe()
     if not t:
         raise SystemExit(
             "torch built without error but no torch binary was found under\n"
-            "tools/torch. Look in tools/torch/build-win for it and, if it is\n"
-            "somewhere unexpected, add that path to torch_exe() in setup.py.")
+            "tools/torch. Look in %s for it and, if it is\n"
+            "somewhere unexpected, add that path to torch_exe() in setup.py."
+            % TORCH_BUILD)
     return t
 
 
@@ -212,7 +416,7 @@ def check_rom():
     print("  %sROM ok%s  (md5 %s)" % (GREEN, OFF, got))
 
 
-def build_steps(config):
+def build_steps(config, force=False):
     py = sys.executable
     aica_env = {"PYTHONPATH": os.path.join(ROOT, "tools", "aica")}
     objdir = "out/" + config
@@ -458,28 +662,49 @@ def build_steps(config):
             "\n".join(targets) + "\n")
         print("    %s incbin targets from data/**/*.s" % format(len(targets), ","))
 
+    # The six helpers are single-TU C99 programs. Compile them directly rather
+    # than through tools/Makefile: that needs make AND gcc on PATH, and a
+    # Windows machine that runs RXDK has neither as a rule -- it has zig,
+    # which is a complete Clang. hostenv.cc_command() prefers RXDK's own zig,
+    # then cc/gcc/clang, so the same code path works on every host without a
+    # MinGW or MSYS2 install. Same sources and flags as the Makefile, which
+    # is kept for anyone who prefers it.
+    HELPERS = [
+        ("mio0",                 ["libmio0.c"],               ["-DMIO0_STANDALONE"]),
+        ("n64graphics",          ["n64graphics.c", "utils.c"], ["-DN64GRAPHICS_STANDALONE"]),
+        ("displaylist_packer",   ["displaylist_packer.c"],    ["-Wno-unused-result"]),
+        ("n64cksum",             ["n64cksum.c", "utils.c"],    ["-DN64CKSUM_STANDALONE"]),
+        ("tkmk00",               ["libtkmk00.c", "utils.c"],   ["-DTKMK00_STANDALONE"]),
+        ("extract_data_for_mio", ["extract_data_for_mio.c"],  []),
+    ]
+    CFLAGS = ["-I", ".", "-Wall", "-Wextra", "-Wno-unused-parameter",
+              "-std=c99", "-O2", "-s"]
+
     def tools_step():
-        # MinGW installs call it mingw32-make; MSYS2 and w64devkit call it
-        # make; some BSD-ish setups gmake. Any of them builds tools/Makefile.
-        make = next((m for m in ("make", "mingw32-make", "gmake")
-                     if shutil.which(m)), None)
-        if not make:
+        cc = hostenv.cc_command()
+        if cc is None:
             raise SystemExit(
-                "%s! no make found (tried make, mingw32-make, gmake).%s\n\n"
+                "%s! no C compiler found.%s\n\n"
                 "  extract_assets.py shells out to six native helpers --\n"
                 "  n64graphics, mio0, tkmk00, n64cksum, extract_data_for_mio\n"
                 "  and displaylist_packer. Their C sources ARE in the repo but\n"
-                "  the binaries are not, so they have to be compiled once:\n\n"
-                "    make -C tools\n\n"
-                "  On Windows the DC port ships w64devkit for exactly this;\n"
-                "  any MinGW/MSYS2 install with make and gcc will do.\n"
-                % (RED, OFF))
-        # Name the programs rather than using `all`: that target also builds
-        # torch, by shelling out to a hardcoded `make`, which fails on a MinGW
-        # install where the binary is mingw32-make. torch is a CMake project
-        # with its own build step below, so it does not belong here anyway.
-        sh(make, "-C", "tools", "mio0", "n64graphics", "displaylist_packer",
-           "n64cksum", "tkmk00", "extract_data_for_mio")
+                "  the binaries are not, so they have to be compiled once.\n\n"
+                "  Looked for: $CC, RXDK's zig (%s),\n"
+                "  then cc, gcc, clang on PATH. Installing RXDK is the easy\n"
+                "  fix; it brings zig, and zig cc compiles these.\n"
+                % (RED, OFF, hostenv.zig_install_root()))
+        print("    compiler: %s" % " ".join(cc))
+        tools = os.path.join(ROOT, "tools")
+        for name, srcs, flags in HELPERS:
+            out = name + EXE
+            if not force and os.path.exists(os.path.join(tools, out)):
+                continue
+            cmd = cc + CFLAGS + flags + srcs + ["-o", out]
+            print(DIM + "    $ " + " ".join(cmd) + OFF)
+            r = subprocess.run(cmd, cwd=tools)
+            if r.returncode != 0:
+                raise SystemExit("%s! step failed: compiling tools/%s%s"
+                                 % (RED, name, OFF))
 
     return [
         Step("create the output directories the extractors assume",
@@ -633,14 +858,11 @@ def build_steps(config):
              segblobs_step,
              "must precede build pass 1: it writes sources the build compiles"),
 
-        # imagebld needs these to stamp the XBE, and dc_data is gitignored, so
-        # a clean tree has neither. The source art IS published at the repo
-        # root; make_xbx.py converts it to the dashboard's XPR0 format.
-        Step("make_xbx: dashboard title and save icons",
-             ["dc_data/titleimage.xbx", "dc_data/saveimage.xbx"],
-             lambda: sh(py, "tools/make_xbx.py"),
-             "imagebld refuses to run without them"),
-
+        # The dashboard icons are NOT a step here. Platform/xbox/*.rdf describe
+        # them to the RXDK bundler, the build engine runs it before linking
+        # (rxdk.project.json "resources"), and imagebld injects the result.
+        # The committed inputs are 24-bit BMPs at final size; tools/make_xbx.py
+        # regenerates those from the PNG art when the art changes.
         Step("RXDK build (pass 1: objects)",
              [objdir + "/Build"],
              lambda: sh(RXDK, "build", "--project-root", ".",
@@ -753,7 +975,12 @@ def main():
     ap.add_argument("--force", action="store_true",
                     help="run every step even when its outputs already exist")
     ap.add_argument("--config", default="Release", choices=["Release", "Debug"])
+    ap.add_argument("--zig-torch", action="store_true",
+                    help="build torch with RXDK's zig even if Visual Studio / "
+                         "a native C++ toolchain is installed")
     args = ap.parse_args()
+    global FORCE_ZIG_TORCH
+    FORCE_ZIG_TORCH = args.zig_torch
 
     os.chdir(ROOT)
     if not args.check:
@@ -761,7 +988,7 @@ def main():
     print("\n%sMario Kart 64 -- Xbox%s   setup, %s\n" % (GREEN, OFF, args.config))
     check_rom()
 
-    steps = build_steps(args.config)
+    steps = build_steps(args.config, args.force)
     if args.skip_build:
         steps = [s for s in steps if not s.name.startswith("RXDK build")]
 
@@ -787,7 +1014,9 @@ def main():
     if not os.path.exists(RXDK) and not args.skip_build:
         raise SystemExit(
             "%s! RXDK not found at %s%s\n"
-            "  Install it, or pass --skip-build to stop after asset generation."
+            "  Install it (the VS Code or Visual Studio extension stages it\n"
+            "  there), set RXDK_STAGED_TOOLS if yours lives elsewhere, or pass\n"
+            "  --skip-build to stop after asset generation."
             % (RED, RXDK, OFF))
 
     for i, s in enumerate(steps, 1):

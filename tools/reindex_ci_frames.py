@@ -13,7 +13,9 @@ writes the .bin and re-compresses the .mio0 in place.
 import struct, zlib, re, io, os, glob, subprocess, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MIO0 = os.path.join(ROOT, "tools", "mio0.exe")
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import hostenv
+MIO0 = os.path.join(ROOT, "tools", "mio0" + hostenv.EXE)
 
 DIRS = ["greenshell", "blueshell", "trees", "finish_line_banner"]
 

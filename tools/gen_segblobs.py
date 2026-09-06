@@ -15,7 +15,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import coff_section
 import coff_reloc
 
-MIO0 = os.path.abspath("tools/mio0.exe")
+import hostenv
+MIO0 = os.path.join(hostenv.ROOT, "tools", "mio0" + hostenv.EXE)
 OUT  = "Platform/xbox/gen_seg"
 # Build objects live in the Release configuration's outputDir (rxdk.project.json);
 # out/ is the legacy flat layout. Override with RXDK_OBJ_DIR.

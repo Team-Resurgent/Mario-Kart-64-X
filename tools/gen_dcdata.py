@@ -13,7 +13,8 @@ exactly what the Dreamcast build does (compile the same .c, objcopy -O binary).
 import io, os, re, subprocess, glob, shutil, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-MIO0 = os.path.abspath("tools/mio0.exe")
+import hostenv
+MIO0 = os.path.join(hostenv.ROOT, "tools", "mio0" + hostenv.EXE)
 OUT = "dc_data"
 os.makedirs(OUT, exist_ok=True)
 

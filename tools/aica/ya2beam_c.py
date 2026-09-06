@@ -3,7 +3,8 @@
 ctypes bridge to the C beam encoder (ya2beam.c). Drop-in for yamaha_adpcm_v2.encode:
 same (bytes, nsamples) return and byte-identical output, but ~100x faster.
 
-The .so is built on first use with the host C compiler (present in Colab); if the
+The shared library (.so / .dylib / .dll) is built on first use with whatever C
+compiler tools/hostenv.py finds -- $CC, RXDK's zig, or cc/gcc/clang. If the
 build or load fails for any reason we transparently fall back to the pure-Python
 ya2 encoder, so a machine without a compiler still works (just slowly).
 """
@@ -19,7 +20,9 @@ import yamaha_adpcm_v2 as _ya2   # pure-Python reference / fallback
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _SRC = os.path.join(_HERE, "ya2beam.c")
-_SO = os.path.join(_HERE, "_ya2beam.so")
+sys.path.insert(0, os.path.dirname(_HERE))      # tools/, for hostenv
+import hostenv                                   # noqa: E402
+_SO = os.path.join(_HERE, "_ya2beam" + hostenv.shared_lib_suffix())
 
 _lock = threading.Lock()
 _lib = None            # loaded CDLL, or False if we've decided to use the fallback
@@ -30,9 +33,12 @@ def _build_so():
     try:
         if os.path.exists(_SO) and os.path.getmtime(_SO) >= os.path.getmtime(_SRC):
             return True
-        cc = os.environ.get("CC", "cc")
+        cc = hostenv.cc_command()
+        if cc is None:
+            raise RuntimeError("no C compiler: set CC, install RXDK (zig), "
+                               "or put cc/gcc/clang on PATH")
         tmp = "%s.tmp%d" % (_SO, os.getpid())
-        subprocess.run([cc, "-O3", "-shared", "-fPIC", "-o", tmp, _SRC],
+        subprocess.run(cc + ["-O3", "-shared", "-fPIC", "-o", tmp, _SRC],
                        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
         os.replace(tmp, _SO)          # atomic: safe under the emit's multiprocessing Pool
         return True

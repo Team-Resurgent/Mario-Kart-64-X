@@ -1,0 +1,16 @@
+// Dashboard title icon. The build engine runs the RXDK bundler on this before
+// linking; imagebld then injects the .xbx into the XBE (rxdk.project.json
+// imageBuild.titleImage). XPR0 is the bare-texture container the dashboard
+// expects, DXT1 the only format it renders (an A8R8G8B8 icon shows black).
+// The source BMP is committed art -- see tools/make_xbx.py to regenerate it.
+
+out_version        XPR0
+out_packedresource gen/titleimage.xbx
+out_header         gen/titleimage.h
+
+Texture TitleImage
+{
+   Source titleimage.bmp
+   Format D3DFMT_DXT1
+   Levels 1
+}
