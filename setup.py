@@ -6,6 +6,7 @@
     python setup.py --skip-build   # regenerate assets, stop before RXDK
     python setup.py --force        # redo every step even if outputs exist
     python setup.py --config Debug # Debug instead of Release
+    python setup.py --zig-torch    # build torch with zig, not Visual Studio
 
 This project ships as SOURCE ONLY. Nothing ROM-derived is in the repository,
 so a clean clone will not build until you supply `baserom.us.z64` yourself and
@@ -71,6 +72,7 @@ ROM_MD5 = "3a67d9986f54eb282924fca4cd5f6dff"
 RXDK = hostenv.rxdk_cli()
 EXE = hostenv.EXE
 TORCH_BUILD = "tools/torch/build"
+FORCE_ZIG_TORCH = False             # --zig-torch; see ensure_torch()
 
 # torch extracts the ROM into ~180 source files. It is fetched and built by
 # this script rather than carried as a git submodule: a submodule would still
@@ -254,7 +256,7 @@ def ensure_torch():
     configure = ["cmake", "-S", "tools/torch", "-B", TORCH_BUILD,
                  "-DCMAKE_BUILD_TYPE=Release"]
     ok = False
-    if have_native_cxx():
+    if have_native_cxx() and not FORCE_ZIG_TORCH:
         ok = subprocess.run(configure, cwd=ROOT).returncode == 0
         if not ok:
             print("    %scmake could not configure torch with the system "
@@ -908,7 +910,12 @@ def main():
     ap.add_argument("--force", action="store_true",
                     help="run every step even when its outputs already exist")
     ap.add_argument("--config", default="Release", choices=["Release", "Debug"])
+    ap.add_argument("--zig-torch", action="store_true",
+                    help="build torch with RXDK's zig even if Visual Studio / "
+                         "a native C++ toolchain is installed")
     args = ap.parse_args()
+    global FORCE_ZIG_TORCH
+    FORCE_ZIG_TORCH = args.zig_torch
 
     os.chdir(ROOT)
     if not args.check:

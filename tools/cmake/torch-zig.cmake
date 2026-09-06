@@ -22,7 +22,27 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
     GIT_TAG v1.14.1
 )
-# 2. src/audio/AudioManager.cpp has `a <= x <= b` chained comparisons that
+# 2. Even fmt 10.2.1's compile-time format-string check is rejected by
+#    Clang 21 ("call to consteval function ... is not a constant expression").
+#    fmt provides FMT_CONSTEVAL as the override: empty, the check moves to run
+#    time, which is how fmt behaves on compilers without consteval anyway.
+add_compile_definitions(FMT_CONSTEVAL=)
+#    And fmt 10 no longer formats an `enum class` implicitly; torch logs one.
+#    torch-zig-compat.h supplies the format_as() hook fmt 10 looks for.
+add_compile_options(-include "${CMAKE_CURRENT_LIST_DIR}/torch-zig-compat.h")
+# 3. src/audio/AudioManager.cpp has `a <= x <= b` chained comparisons that
 #    Clang 21 diagnoses as an error by default. Third-party code; keep it
 #    building.
 add_compile_options(-Wno-parentheses)
+# 4. Static libraries. CMake looks for a standalone `ar`/`ranlib`, which a
+#    machine with no native toolchain does not have (CMAKE_AR-NOTFOUND at link
+#    time). zig ships both as subcommands. CMAKE_AR must be one executable, so
+#    point it at zig itself and put the subcommand into the rule strings.
+#    CMAKE_C_COMPILER is the resolved zig path here; the "cc" argument lives in
+#    CMAKE_C_COMPILER_ARG1.
+set(CMAKE_AR "${CMAKE_C_COMPILER}" CACHE FILEPATH "zig, used as ar/ranlib" FORCE)
+foreach(lang C CXX)
+    set(CMAKE_${lang}_ARCHIVE_CREATE "<CMAKE_AR> ar qc <TARGET> <OBJECTS>")
+    set(CMAKE_${lang}_ARCHIVE_APPEND "<CMAKE_AR> ar q <TARGET> <OBJECTS>")
+    set(CMAKE_${lang}_ARCHIVE_FINISH "<CMAKE_AR> ranlib <TARGET>")
+endforeach()
