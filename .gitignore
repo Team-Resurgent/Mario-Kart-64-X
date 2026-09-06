@@ -222,3 +222,7 @@ tools/torch/
 
 # Portable CMake, downloaded by setup.py when none is on PATH (see ensure_cmake).
 /tools/cmake-bin/
+
+# Visual Studio (mk64x.sln is committed; these are per-user)
+/.vs/
+*.vcxproj.user

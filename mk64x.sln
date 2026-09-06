@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mk64x", "mk64x.vcxproj", "{7C1D4E2A-3F58-4B9E-9A6B-2E0C5D8F1A47}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Xbox = Debug|Xbox
+		Release|Xbox = Release|Xbox
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7C1D4E2A-3F58-4B9E-9A6B-2E0C5D8F1A47}.Debug|Xbox.ActiveCfg = Debug|Xbox
+		{7C1D4E2A-3F58-4B9E-9A6B-2E0C5D8F1A47}.Debug|Xbox.Build.0 = Debug|Xbox
+		{7C1D4E2A-3F58-4B9E-9A6B-2E0C5D8F1A47}.Release|Xbox.ActiveCfg = Release|Xbox
+		{7C1D4E2A-3F58-4B9E-9A6B-2E0C5D8F1A47}.Release|Xbox.Build.0 = Release|Xbox
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

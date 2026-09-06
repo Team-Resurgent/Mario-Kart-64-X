@@ -1,0 +1,1481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{A051F653-4704-5EA3-8F9C-36849F67E896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\xbox">
+      <UniqueIdentifier>{680F9271-405B-5ACF-87FE-FB59837383AB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\xbox\arch">
+      <UniqueIdentifier>{7B3902C1-AB60-5220-8FA7-979840341D96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\xbox\gen">
+      <UniqueIdentifier>{2B7CC806-AAB1-55FE-B69E-23CA98511636}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\xbox\gen_asm">
+      <UniqueIdentifier>{3B11FE42-8701-5407-A94F-1895037A38E5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\xbox\gen_seg">
+      <UniqueIdentifier>{2527EB0A-49CF-5A47-BE89-446258E9CF7C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\xbox\kos">
+      <UniqueIdentifier>{4EBC38EA-9F9C-5ACC-BE4F-D0F3E6FAFC39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{C3271C95-3FAB-566B-A4C4-013BE85550A0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\code">
+      <UniqueIdentifier>{39765917-0B53-557A-B4BE-3D43B90B9292}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\code\ceremony_data">
+      <UniqueIdentifier>{1C8148E0-8BAF-5153-ADBB-F64421FF2D5F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\code\common_data">
+      <UniqueIdentifier>{A54B8727-0E7F-5C42-A1B4-B3581AC5BAF7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\code\data_800E45C0">
+      <UniqueIdentifier>{9A00E93B-D5EF-5A90-BAA7-4DBCE64AEE0D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\code\data_800E8700">
+      <UniqueIdentifier>{A093CB2A-DDC4-5E28-9FE0-72EFDC7AC4A9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\code\rainbow_road_tluts">
+      <UniqueIdentifier>{318542A6-A51F-5CBD-AE9C-FDA4563DD4DE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\code\startup_logo">
+      <UniqueIdentifier>{2D1F2E9A-056C-5894-AF99-825D2654F3D3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses">
+      <UniqueIdentifier>{BD911887-3491-5F71-8CF3-19A45BE3EB42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\banshee_boardwalk">
+      <UniqueIdentifier>{FA7A9221-79A5-55C7-99B9-1EAC9029B108}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\big_donut">
+      <UniqueIdentifier>{AB5889CD-AF45-573E-9D27-EB431D63F25D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\block_fort">
+      <UniqueIdentifier>{647E9648-E2E6-5CCF-A44C-2A47C74BB909}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\bowsers_castle">
+      <UniqueIdentifier>{68DB01AB-01C8-54AC-957A-9D2AD62FBE8B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\choco_mountain">
+      <UniqueIdentifier>{8EE4AB8B-39F1-50FF-A52C-6D3F3A4FF65F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\dks_jungle_parkway">
+      <UniqueIdentifier>{CD07A91B-86C4-56CD-A0E3-EF2E530926E7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\double_deck">
+      <UniqueIdentifier>{8B26DAAB-0D7B-5AD1-A2C9-CEF4E3EEB6B2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\frappe_snowland">
+      <UniqueIdentifier>{1E2E339E-7176-5811-8CDD-12B38CC3AC85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\kalimari_desert">
+      <UniqueIdentifier>{4889402D-7AD3-5C49-9247-C8812CF4E66B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\koopa_troopa_beach">
+      <UniqueIdentifier>{1C61D898-4A3E-5EA8-9BF4-D460F2E73DC4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\luigi_raceway">
+      <UniqueIdentifier>{93A64857-4592-564E-8934-58F9FC8DDBBD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\mario_raceway">
+      <UniqueIdentifier>{4C045E02-7BAE-54E6-899E-DB6C758F0815}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\moo_moo_farm">
+      <UniqueIdentifier>{2E3359B1-18B1-54D2-8180-71A6C9A22ADC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\rainbow_road">
+      <UniqueIdentifier>{8F8CFF67-4C04-59F6-AB1E-2C4FA8C2BDE7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\royal_raceway">
+      <UniqueIdentifier>{11EC7D50-F0AF-5C6F-8236-4DCD618F380D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\sherbet_land">
+      <UniqueIdentifier>{0F45BB5B-E586-5B39-8E95-78FE7D8EC8C2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\skyscraper">
+      <UniqueIdentifier>{B228F3C9-FCFA-588D-BA1A-929CCFBCC4B2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\toads_turnpike">
+      <UniqueIdentifier>{6EB09C90-4148-5328-A123-7A3A2FD3268F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\wario_stadium">
+      <UniqueIdentifier>{6925D9A3-4D97-5592-8D6A-F061E14435EC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="courses\yoshi_valley">
+      <UniqueIdentifier>{84CA279C-512F-531B-BA80-6526DA5C9ED8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{7EFBEB5A-2997-5F85-8448-67D9ADBDD405}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\PR">
+      <UniqueIdentifier>{34960418-1996-5BC2-8AA7-8FCD380877AE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\assets">
+      <UniqueIdentifier>{DA052743-9E32-54A2-A160-672B302AAA24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\libc">
+      <UniqueIdentifier>{C55133BE-712A-57A6-86E5-2C72012C4827}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{ECF52FEF-1B3F-55AA-8DAE-ECBE398A972F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\audio">
+      <UniqueIdentifier>{96241158-17DB-5247-B68E-2F498BC8E4B7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\buffers">
+      <UniqueIdentifier>{58EC2B03-FF51-5C1A-8C5B-847D065763CC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\compression">
+      <UniqueIdentifier>{03BED1E3-D6BE-5E87-94CC-5F29C167F8C5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\data">
+      <UniqueIdentifier>{3407193B-A787-5460-A608-94B826CB2F25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\dcaudio">
+      <UniqueIdentifier>{8F6226ED-C4D4-52BE-AE7B-C5552AB84C6D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\debug">
+      <UniqueIdentifier>{6087D5DA-92EF-5E46-8DB1-631049AA48F1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ending">
+      <UniqueIdentifier>{5F0C89D0-1EA1-5C29-BE28-F09DE30103CB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\gfx">
+      <UniqueIdentifier>{C61DA9C7-888B-54A5-A138-42587508195B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\os">
+      <UniqueIdentifier>{E6072111-C329-5412-83E2-FA42387517D9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\racing">
+      <UniqueIdentifier>{9BB8AFC1-8F1B-5C5D-A9E9-C69EE4F68CF8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\animation.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\camera.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\code_800029B0.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\code_8003DC40.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\code_80057C60.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\code_80057C60_var.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\code_8006E9C0.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\code_80086E70.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\code_80091440.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\code_800AF9B0.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpu_vehicles_camera_path.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\crash_screen.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\src_effects.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gbiMacro.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\kart_dma.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math_util_2.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu_items.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menus.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\player_controller.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\profiler.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render_objects.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render_player.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\save.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\spawn_players.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\update_objects.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\aica_synth.c">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\audio_session_presets.c">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\data.c">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\src_audio_effects.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\external.c">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\heap.c">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\load.c">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\playback.c">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\port_eu.c">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\seqplayer.c">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\synthesis.c">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\buffers\all_kinds_of_buffers.c">
+      <Filter>src\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\buffers\audio_heap.c">
+      <Filter>src\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\buffers\buffers.c">
+      <Filter>src\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\buffers\memory_pool.c">
+      <Filter>src\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\buffers\random.c">
+      <Filter>src\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\buffers\trig_tables.c">
+      <Filter>src\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\buffers\trig_tables_bss.c">
+      <Filter>src\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\compression\libmio0.c">
+      <Filter>src\compression</Filter>
+    </ClCompile>
+    <ClCompile Include="src\compression\libtkmk00.c">
+      <Filter>src\compression</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data\data_segment2.c">
+      <Filter>src\data</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data\kart_attributes.c">
+      <Filter>src\data</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data\path_spawn_metadata.c">
+      <Filter>src\data</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data\some_data.c">
+      <Filter>src\data</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data\textures.c">
+      <Filter>src\data</Filter>
+    </ClCompile>
+    <ClCompile Include="src\debug\crash_screen_enhancement.c">
+      <Filter>src\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="src\debug\debug.c">
+      <Filter>src\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ending\camera_junk.c">
+      <Filter>src\ending</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ending\ceremony_and_credits.c">
+      <Filter>src\ending</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ending\code_80280000.c">
+      <Filter>src\ending</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ending\code_80281780.c">
+      <Filter>src\ending</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ending\code_80281C40.c">
+      <Filter>src\ending</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ending\credits.c">
+      <Filter>src\ending</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ending\dl_unk_80284EE0.c">
+      <Filter>src\ending</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ending\podium_ceremony_actors.c">
+      <Filter>src\ending</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gfx\gfx_cc.c">
+      <Filter>src\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gfx\gfx_retro_dc.c">
+      <Filter>src\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\alBnkfNew.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\guLookAtF.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\guLookAtRef.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\guMtxCatF.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\guMtxCatL.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\guMtxF2L.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\guNormalize.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\guOrthoF.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\guPerspectiveF.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\guRotateF.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\guScaleF.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\guTranslateF.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os\ultra_reimpl.c">
+      <Filter>src\os</Filter>
+    </ClCompile>
+    <ClCompile Include="src\racing\actors.c">
+      <Filter>src\racing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\racing\actors_extended.c">
+      <Filter>src\racing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\racing\collision.c">
+      <Filter>src\racing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\racing\math_util.c">
+      <Filter>src\racing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\racing\memory.c">
+      <Filter>src\racing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\racing\race_logic.c">
+      <Filter>src\racing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\racing\render_courses.c">
+      <Filter>src\racing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\racing\skybox_and_splitscreen.c">
+      <Filter>src\racing</Filter>
+    </ClCompile>
+    <ClCompile Include="courses\courseTable.c">
+      <Filter>courses</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_banshee_boardwalk_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_banshee_boardwalk_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_banshee_boardwalk_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_banshee_boardwalk_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_banshee_boardwalk_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_big_donut_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_big_donut_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_big_donut_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_big_donut_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_big_donut_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_block_fort_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_block_fort_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_block_fort_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_block_fort_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_block_fort_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_bowsers_castle_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_bowsers_castle_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_bowsers_castle_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_bowsers_castle_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_bowsers_castle_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_choco_mountain_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_choco_mountain_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_choco_mountain_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_choco_mountain_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_choco_mountain_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_dks_jungle_parkway_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_dks_jungle_parkway_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_dks_jungle_parkway_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_dks_jungle_parkway_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_dks_jungle_parkway_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_double_deck_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_double_deck_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_double_deck_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_double_deck_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_double_deck_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_frappe_snowland_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_frappe_snowland_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_frappe_snowland_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_frappe_snowland_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_frappe_snowland_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_kalimari_desert_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_kalimari_desert_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_kalimari_desert_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_kalimari_desert_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_kalimari_desert_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_koopa_troopa_beach_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_koopa_troopa_beach_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_koopa_troopa_beach_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_koopa_troopa_beach_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_koopa_troopa_beach_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_luigi_raceway_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_luigi_raceway_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_luigi_raceway_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_luigi_raceway_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_luigi_raceway_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_mario_raceway_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_mario_raceway_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_mario_raceway_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_mario_raceway_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_mario_raceway_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_moo_moo_farm_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_moo_moo_farm_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_moo_moo_farm_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_moo_moo_farm_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_moo_moo_farm_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_rainbow_road_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_rainbow_road_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_rainbow_road_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_rainbow_road_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_rainbow_road_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_royal_raceway_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_royal_raceway_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_royal_raceway_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_royal_raceway_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_royal_raceway_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_sherbet_land_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_sherbet_land_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_sherbet_land_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_sherbet_land_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_sherbet_land_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_skyscraper_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_skyscraper_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_skyscraper_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_skyscraper_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_skyscraper_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_toads_turnpike_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_toads_turnpike_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_toads_turnpike_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_toads_turnpike_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_toads_turnpike_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_wario_stadium_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_wario_stadium_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_wario_stadium_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_wario_stadium_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_wario_stadium_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_yoshi_valley_course_data.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_yoshi_valley_course_offsets.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_yoshi_valley_course_displaylists.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_yoshi_valley_course_vertices.inc.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\courses_yoshi_valley_course_textures.linkonly.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\code\ceremony_data\ceremony_data.c">
+      <Filter>assets\code\ceremony_data</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\code\common_data\common_data.c">
+      <Filter>assets\code\common_data</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\code\data_800E45C0\data_800E45C0.c">
+      <Filter>assets\code\data_800E45C0</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\code\data_800E8700\data_800E8700.c">
+      <Filter>assets\code\data_800E8700</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\code\rainbow_road_tluts\rainbow_road_tluts.c">
+      <Filter>assets\code\rainbow_road_tluts</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\code\startup_logo\startup_logo.c">
+      <Filter>assets\code\startup_logo</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gfx_nv2a.cpp">
+      <Filter>Platform\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gfx_xbox.c">
+      <Filter>Platform\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\kos_xbox.c">
+      <Filter>Platform\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="src\staff_ghosts.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\xbox_savegame.c">
+      <Filter>Platform\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\stubs_xbox.c">
+      <Filter>Platform\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="courses\staff_ghost_data.c">
+      <Filter>courses</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_seg\ceremony_data_blob.c">
+      <Filter>Platform\xbox\gen_seg</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_seg\common_data_blob.c">
+      <Filter>Platform\xbox\gen_seg</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_seg\data_segment2_blob.c">
+      <Filter>Platform\xbox\gen_seg</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_seg\startup_logo_blob.c">
+      <Filter>Platform\xbox\gen_seg</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_course_player_selection.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_bowser_kart.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_donkeykong_kart.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_luigi_kart.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_mario_kart.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_peach_kart.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_toad_kart.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_wario_kart.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_yoshi_kart.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_other_textures.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_texture_data_2.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_texture_tkmk00.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen_asm\data_zkarts_all_kart.c">
+      <Filter>Platform\xbox\gen_asm</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\xbox\gen\aica_sample_table.c">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Platform\xbox\arch\arch.h">
+      <Filter>Platform\xbox\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\xbox\gen\aica_sample_table.h">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\xbox\gen\saveimage.h">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\xbox\gen\titleimage.h">
+      <Filter>Platform\xbox\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\xbox\kos.h">
+      <Filter>Platform\xbox</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\xbox\kos\oneshot_timer.h">
+      <Filter>Platform\xbox\kos</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\xbox\sh4zam.h">
+      <Filter>Platform\xbox</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\xbox\xbox_debug.h">
+      <Filter>Platform\xbox</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\all_course_data.h">
+      <Filter>courses</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\all_course_model.h">
+      <Filter>courses</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\all_course_offsets.h">
+      <Filter>courses</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\all_course_packed.h">
+      <Filter>courses</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\banshee_boardwalk\course_data.h">
+      <Filter>courses\banshee_boardwalk</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\banshee_boardwalk\course_displaylists.inc.h">
+      <Filter>courses\banshee_boardwalk</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\banshee_boardwalk\course_textures.linkonly.h">
+      <Filter>courses\banshee_boardwalk</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\big_donut\course_data.h">
+      <Filter>courses\big_donut</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\big_donut\course_displaylists.inc.h">
+      <Filter>courses\big_donut</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\big_donut\course_textures.linkonly.h">
+      <Filter>courses\big_donut</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\block_fort\course_data.h">
+      <Filter>courses\block_fort</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\block_fort\course_displaylists.inc.h">
+      <Filter>courses\block_fort</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\block_fort\course_textures.linkonly.h">
+      <Filter>courses\block_fort</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\bowsers_castle\course_data.h">
+      <Filter>courses\bowsers_castle</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\bowsers_castle\course_displaylists.inc.h">
+      <Filter>courses\bowsers_castle</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\bowsers_castle\course_textures.linkonly.h">
+      <Filter>courses\bowsers_castle</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\choco_mountain\course_data.h">
+      <Filter>courses\choco_mountain</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\choco_mountain\course_displaylists.inc.h">
+      <Filter>courses\choco_mountain</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\choco_mountain\course_textures.linkonly.h">
+      <Filter>courses\choco_mountain</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\courseTable.h">
+      <Filter>courses</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\dks_jungle_parkway\course_data.h">
+      <Filter>courses\dks_jungle_parkway</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\dks_jungle_parkway\course_displaylists.inc.h">
+      <Filter>courses\dks_jungle_parkway</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\dks_jungle_parkway\course_textures.linkonly.h">
+      <Filter>courses\dks_jungle_parkway</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\double_deck\course_data.h">
+      <Filter>courses\double_deck</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\double_deck\course_displaylists.inc.h">
+      <Filter>courses\double_deck</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\double_deck\course_textures.linkonly.h">
+      <Filter>courses\double_deck</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\frappe_snowland\course_data.h">
+      <Filter>courses\frappe_snowland</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\frappe_snowland\course_displaylists.inc.h">
+      <Filter>courses\frappe_snowland</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\frappe_snowland\course_textures.linkonly.h">
+      <Filter>courses\frappe_snowland</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\kalimari_desert\course_data.h">
+      <Filter>courses\kalimari_desert</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\kalimari_desert\course_displaylists.inc.h">
+      <Filter>courses\kalimari_desert</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\kalimari_desert\course_textures.linkonly.h">
+      <Filter>courses\kalimari_desert</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\koopa_troopa_beach\course_data.h">
+      <Filter>courses\koopa_troopa_beach</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\koopa_troopa_beach\course_displaylists.inc.h">
+      <Filter>courses\koopa_troopa_beach</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\koopa_troopa_beach\course_textures.linkonly.h">
+      <Filter>courses\koopa_troopa_beach</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\luigi_raceway\course_data.h">
+      <Filter>courses\luigi_raceway</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\luigi_raceway\course_displaylists.inc.h">
+      <Filter>courses\luigi_raceway</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\luigi_raceway\course_textures.linkonly.h">
+      <Filter>courses\luigi_raceway</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\mario_raceway\course_data.h">
+      <Filter>courses\mario_raceway</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\mario_raceway\course_displaylists.inc.h">
+      <Filter>courses\mario_raceway</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\mario_raceway\course_textures.linkonly.h">
+      <Filter>courses\mario_raceway</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\moo_moo_farm\course_data.h">
+      <Filter>courses\moo_moo_farm</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\moo_moo_farm\course_displaylists.inc.h">
+      <Filter>courses\moo_moo_farm</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\moo_moo_farm\course_textures.linkonly.h">
+      <Filter>courses\moo_moo_farm</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\rainbow_road\course_data.h">
+      <Filter>courses\rainbow_road</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\rainbow_road\course_displaylists.inc.h">
+      <Filter>courses\rainbow_road</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\rainbow_road\course_textures.linkonly.h">
+      <Filter>courses\rainbow_road</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\royal_raceway\course_data.h">
+      <Filter>courses\royal_raceway</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\royal_raceway\course_displaylists.inc.h">
+      <Filter>courses\royal_raceway</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\royal_raceway\course_textures.linkonly.h">
+      <Filter>courses\royal_raceway</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\sherbet_land\course_data.h">
+      <Filter>courses\sherbet_land</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\sherbet_land\course_displaylists.inc.h">
+      <Filter>courses\sherbet_land</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\sherbet_land\course_textures.linkonly.h">
+      <Filter>courses\sherbet_land</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\skyscraper\course_data.h">
+      <Filter>courses\skyscraper</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\skyscraper\course_displaylists.inc.h">
+      <Filter>courses\skyscraper</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\skyscraper\course_textures.linkonly.h">
+      <Filter>courses\skyscraper</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\toads_turnpike\course_data.h">
+      <Filter>courses\toads_turnpike</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\toads_turnpike\course_displaylists.inc.h">
+      <Filter>courses\toads_turnpike</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\toads_turnpike\course_textures.linkonly.h">
+      <Filter>courses\toads_turnpike</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\wario_stadium\course_data.h">
+      <Filter>courses\wario_stadium</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\wario_stadium\course_displaylists.inc.h">
+      <Filter>courses\wario_stadium</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\wario_stadium\course_textures.linkonly.h">
+      <Filter>courses\wario_stadium</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\yoshi_valley\course_data.h">
+      <Filter>courses\yoshi_valley</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\yoshi_valley\course_displaylists.inc.h">
+      <Filter>courses\yoshi_valley</Filter>
+    </ClInclude>
+    <ClInclude Include="courses\yoshi_valley\course_textures.linkonly.h">
+      <Filter>courses\yoshi_valley</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\R4300.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\abi.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\gbi.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\gs2dex.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\gu.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\libaudio.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\libultra.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\mbi.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_ai.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_cache.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_cont.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_eeprom.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_exception.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_internal.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_libc.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_message.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_misc.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_pi.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_rdp.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_thread.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_time.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_tlb.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\os_vi.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\rcp.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\sptask.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\ucode.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PR\ultratypes.h">
+      <Filter>include\PR</Filter>
+    </ClInclude>
+    <ClInclude Include="include\actor_types.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\align_asset_macro.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assets\ceremony_data.h">
+      <Filter>include\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assets\ceremony_rsp_init_80284EE0.h">
+      <Filter>include\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assets\common_data.h">
+      <Filter>include\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assets\data_800E45C0.h">
+      <Filter>include\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assets\data_800E8700.h">
+      <Filter>include\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assets\rainbow_road_tluts.h">
+      <Filter>include\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assets\startup_logo.h">
+      <Filter>include\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bomb_kart.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\buffer_sizes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common_structs.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\config.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\course.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\course_offsets.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\debug.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\decode.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\defines.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kart_attributes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kos_undef.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\libc\math.h">
+      <Filter>include\libc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\libc\stdarg.h">
+      <Filter>include\libc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\libc\stddef.h">
+      <Filter>include\libc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\libc\stdio.h">
+      <Filter>include\libc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\libc\stdlib.h">
+      <Filter>include\libc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\libc\string.h">
+      <Filter>include\libc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\macros.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mk64.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\objects.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\path.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\save_data.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\segments.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sh4zam.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sincoss.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sounds.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\spline.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ultra64.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\animation.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\aica_synth.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\data.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\effects.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\external.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\heap.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\internal.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\load.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\mixer.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\playback.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\port_eu.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\seqplayer.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\synthesis.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\buffers.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\buffers\audio_heap.h">
+      <Filter>src\buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\buffers\random.h">
+      <Filter>src\buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\buffers\trig_tables.h">
+      <Filter>src\buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\camera.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\camera_junk.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\code_800029B0.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\code_8003DC40.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\code_80057C60.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\code_8006E9C0.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\code_80086E70.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\code_80091440.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\code_800AF9B0.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\compression\libmio0.h">
+      <Filter>src\compression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\compression\libtkmk00.h">
+      <Filter>src\compression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\compression\utils.h">
+      <Filter>src\compression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpu_vehicles_camera_path.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\crash_screen.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\path_spawn_metadata.h">
+      <Filter>src\data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\some_data.h">
+      <Filter>src\data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data_segment2.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dcaudio\audio_api.h">
+      <Filter>src\dcaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dcaudio\audio_dc.h">
+      <Filter>src\dcaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dcprofiler.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\debug\all_variables.h">
+      <Filter>src\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="src\debug\crash_screen_enhancement.h">
+      <Filter>src\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="src\effects.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ending\ceremony_and_credits.h">
+      <Filter>src\ending</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ending\code_80280000.h">
+      <Filter>src\ending</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ending\code_80281780.h">
+      <Filter>src\ending</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ending\code_80281C40.h">
+      <Filter>src\ending</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ending\credits.h">
+      <Filter>src\ending</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ending\podium_ceremony_actors.h">
+      <Filter>src\ending</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gfx\gfx_cc.h">
+      <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gfx\gfx_dc.h">
+      <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gfx\gfx_pc.h">
+      <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gfx\gfx_rendering_api.h">
+      <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gfx\gfx_screen_config.h">
+      <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gfx\gfx_window_manager_api.h">
+      <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gfx\gl_fast_vert.h">
+      <Filter>src\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\kart_dma.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math_util_2.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\menu_items.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\menus.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\os\bstring.h">
+      <Filter>src\os</Filter>
+    </ClInclude>
+    <ClInclude Include="src\os\hardware.h">
+      <Filter>src\os</Filter>
+    </ClInclude>
+    <ClInclude Include="src\os\libaudio_internal.h">
+      <Filter>src\os</Filter>
+    </ClInclude>
+    <ClInclude Include="src\os\libultra_internal.h">
+      <Filter>src\os</Filter>
+    </ClInclude>
+    <ClInclude Include="src\os\new_func.h">
+      <Filter>src\os</Filter>
+    </ClInclude>
+    <ClInclude Include="src\os\piint.h">
+      <Filter>src\os</Filter>
+    </ClInclude>
+    <ClInclude Include="src\os\printf.h">
+      <Filter>src\os</Filter>
+    </ClInclude>
+    <ClInclude Include="src\player_controller.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\profiler.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\racing\actors.h">
+      <Filter>src\racing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\racing\actors_extended.h">
+      <Filter>src\racing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\racing\collision.h">
+      <Filter>src\racing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\racing\math_util.h">
+      <Filter>src\racing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\racing\memory.h">
+      <Filter>src\racing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\racing\race_logic.h">
+      <Filter>src\racing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\racing\render_courses.h">
+      <Filter>src\racing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\racing\skybox_and_splitscreen.h">
+      <Filter>src\racing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render_objects.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render_player.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\save.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\spawn_players.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\staff_ghosts.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\textures.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\update_objects.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Platform\xbox\titleimage.rdf">
+      <Filter>Platform\xbox</Filter>
+    </None>
+    <None Include="Platform\xbox\saveimage.rdf">
+      <Filter>Platform\xbox</Filter>
+    </None>
+  </ItemGroup>
+</Project>

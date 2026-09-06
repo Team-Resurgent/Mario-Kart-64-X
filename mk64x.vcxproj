@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- The authoritative project file. rxdk.project.json is DERIVED from it: after editing
+       this (sources, properties), run  python tools/gen_manifest.py  and commit both. -->
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Xbox">
+      <Configuration>Debug</Configuration>
+      <Platform>Xbox</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Xbox">
+      <Configuration>Release</Configuration>
+      <Platform>Xbox</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{7C1D4E2A-3F58-4B9E-9A6B-2E0C5D8F1A47}</ProjectGuid>
+    <RootNamespace>XboxNamespace</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>mk64x</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset Condition="'$(VisualStudioVersion)' == '17.0'">v143</PlatformToolset>
+    <PlatformToolset Condition="'$(VisualStudioVersion)' == '18.0'">v145</PlatformToolset>
+    <PlatformToolset Condition="'$(PlatformToolset)' == ''">v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup>
+    <NMakeOutput>$(MSBuildProjectDirectory)\$(RxdkOutDir)\$(MSBuildProjectName).xbe</NMakeOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox'">
+    <RxdkBuildFlavor>Debug</RxdkBuildFlavor>
+    <RxdkDefines>TARGET_XBOX=1;NON_MATCHING=1;VERSION_US=1;F3DEX_GBI=1;F3D_OLD=1;_LANGUAGE_C=1;_FINALROM=1;SINCOSS_USE_FSCA=0</RxdkDefines>
+    <RxdkIncludePaths>Platform\xbox;include;src;src\gfx;src\racing;src\ending;.</RxdkIncludePaths>
+    <RxdkLibraries>libd3d8;libd3dx8;libxgraphics;libdsound;libxapi;libc;libcpp;libkernel</RxdkLibraries>
+    <RxdkCppStandard>c++23</RxdkCppStandard>
+    <RxdkExceptions>false</RxdkExceptions>
+    <RxdkDeployPaths>dc_data</RxdkDeployPaths>
+    <RxdkForceCopy>true</RxdkForceCopy>
+    <RxdkCreateIso>true</RxdkCreateIso>
+    <RxdkStackSize>262144</RxdkStackSize>
+    <RxdkImageDebug>true</RxdkImageDebug>
+    <RxdkNoLogo>true</RxdkNoLogo>
+    <RxdkNoLibWarn>true</RxdkNoLibWarn>
+    <RxdkTestId>0xffff0401</RxdkTestId>
+    <RxdkTestName>Mario Kart 64</RxdkTestName>
+    <RxdkTestVersion>1</RxdkTestVersion>
+    <RxdkTitleImage>Platform\xbox\gen\titleimage.xbx</RxdkTitleImage>
+    <RxdkDefaultSaveImage>Platform\xbox\gen\saveimage.xbx</RxdkDefaultSaveImage>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox'">
+    <RxdkBuildFlavor>Release</RxdkBuildFlavor>
+    <RxdkReleaseOptimize>ReleaseFast</RxdkReleaseOptimize>
+    <RxdkDefines>TARGET_XBOX=1;NON_MATCHING=1;VERSION_US=1;F3DEX_GBI=1;F3D_OLD=1;_LANGUAGE_C=1;_FINALROM=1;SINCOSS_USE_FSCA=0</RxdkDefines>
+    <RxdkIncludePaths>Platform\xbox;include;src;src\gfx;src\racing;src\ending;.</RxdkIncludePaths>
+    <RxdkLibraries>libd3d8;libd3dx8;libxgraphics;libdsound;libxapi;libc;libcpp;libkernel</RxdkLibraries>
+    <RxdkCppStandard>c++23</RxdkCppStandard>
+    <RxdkExceptions>false</RxdkExceptions>
+    <RxdkDeployPaths>dc_data</RxdkDeployPaths>
+    <RxdkForceCopy>true</RxdkForceCopy>
+    <RxdkCreateIso>true</RxdkCreateIso>
+    <RxdkStackSize>262144</RxdkStackSize>
+    <RxdkImageDebug>false</RxdkImageDebug>
+    <RxdkNoLogo>true</RxdkNoLogo>
+    <RxdkNoLibWarn>true</RxdkNoLibWarn>
+    <RxdkTestId>0xffff0401</RxdkTestId>
+    <RxdkTestName>Mario Kart 64</RxdkTestName>
+    <RxdkTestVersion>1</RxdkTestVersion>
+    <RxdkTitleImage>Platform\xbox\gen\titleimage.xbx</RxdkTitleImage>
+    <RxdkDefaultSaveImage>Platform\xbox\gen\saveimage.xbx</RxdkDefaultSaveImage>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClCompile Include="src\animation.c" />
+    <ClCompile Include="src\camera.c" />
+    <ClCompile Include="src\code_800029B0.c" />
+    <ClCompile Include="src\code_8003DC40.c" />
+    <ClCompile Include="src\code_80057C60.c" />
+    <ClCompile Include="src\code_80057C60_var.c" />
+    <ClCompile Include="src\code_8006E9C0.c" />
+    <ClCompile Include="src\code_80086E70.c" />
+    <ClCompile Include="src\code_80091440.c" />
+    <ClCompile Include="src\code_800AF9B0.c" />
+    <ClCompile Include="src\cpu_vehicles_camera_path.c" />
+    <ClCompile Include="src\crash_screen.c" />
+    <ClCompile Include="Platform\xbox\gen\src_effects.c" />
+    <ClCompile Include="src\gbiMacro.c" />
+    <ClCompile Include="src\kart_dma.c" />
+    <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\math_util_2.c" />
+    <ClCompile Include="src\menu_items.c" />
+    <ClCompile Include="src\menus.c" />
+    <ClCompile Include="src\player_controller.c" />
+    <ClCompile Include="src\profiler.c" />
+    <ClCompile Include="src\render_objects.c" />
+    <ClCompile Include="src\render_player.c" />
+    <ClCompile Include="src\save.c" />
+    <ClCompile Include="src\spawn_players.c" />
+    <ClCompile Include="src\update_objects.c" />
+    <ClCompile Include="src\audio\aica_synth.c" />
+    <ClCompile Include="src\audio\audio_session_presets.c" />
+    <ClCompile Include="src\audio\data.c" />
+    <ClCompile Include="Platform\xbox\gen\src_audio_effects.c" />
+    <ClCompile Include="src\audio\external.c" />
+    <ClCompile Include="src\audio\heap.c" />
+    <ClCompile Include="src\audio\load.c" />
+    <ClCompile Include="src\audio\playback.c" />
+    <ClCompile Include="src\audio\port_eu.c" />
+    <ClCompile Include="src\audio\seqplayer.c" />
+    <ClCompile Include="src\audio\synthesis.c" />
+    <ClCompile Include="src\buffers\all_kinds_of_buffers.c" />
+    <ClCompile Include="src\buffers\audio_heap.c" />
+    <ClCompile Include="src\buffers\buffers.c" />
+    <ClCompile Include="src\buffers\memory_pool.c" />
+    <ClCompile Include="src\buffers\random.c" />
+    <ClCompile Include="src\buffers\trig_tables.c" />
+    <ClCompile Include="src\buffers\trig_tables_bss.c" />
+    <ClCompile Include="src\compression\libmio0.c" />
+    <ClCompile Include="src\compression\libtkmk00.c" />
+    <ClCompile Include="src\data\data_segment2.c" />
+    <ClCompile Include="src\data\kart_attributes.c" />
+    <ClCompile Include="src\data\path_spawn_metadata.c" />
+    <ClCompile Include="src\data\some_data.c" />
+    <ClCompile Include="src\data\textures.c" />
+    <ClCompile Include="src\debug\crash_screen_enhancement.c" />
+    <ClCompile Include="src\debug\debug.c" />
+    <ClCompile Include="src\ending\camera_junk.c" />
+    <ClCompile Include="src\ending\ceremony_and_credits.c" />
+    <ClCompile Include="src\ending\code_80280000.c" />
+    <ClCompile Include="src\ending\code_80281780.c" />
+    <ClCompile Include="src\ending\code_80281C40.c" />
+    <ClCompile Include="src\ending\credits.c" />
+    <ClCompile Include="src\ending\dl_unk_80284EE0.c" />
+    <ClCompile Include="src\ending\podium_ceremony_actors.c" />
+    <ClCompile Include="src\gfx\gfx_cc.c" />
+    <ClCompile Include="src\gfx\gfx_retro_dc.c" />
+    <ClCompile Include="src\os\alBnkfNew.c" />
+    <ClCompile Include="src\os\guLookAtF.c" />
+    <ClCompile Include="src\os\guLookAtRef.c" />
+    <ClCompile Include="src\os\guMtxCatF.c" />
+    <ClCompile Include="src\os\guMtxCatL.c" />
+    <ClCompile Include="src\os\guMtxF2L.c" />
+    <ClCompile Include="src\os\guNormalize.c" />
+    <ClCompile Include="src\os\guOrthoF.c" />
+    <ClCompile Include="src\os\guPerspectiveF.c" />
+    <ClCompile Include="src\os\guRotateF.c" />
+    <ClCompile Include="src\os\guScaleF.c" />
+    <ClCompile Include="src\os\guTranslateF.c" />
+    <ClCompile Include="src\os\ultra_reimpl.c" />
+    <ClCompile Include="src\racing\actors.c" />
+    <ClCompile Include="src\racing\actors_extended.c" />
+    <ClCompile Include="src\racing\collision.c" />
+    <ClCompile Include="src\racing\math_util.c" />
+    <ClCompile Include="src\racing\memory.c" />
+    <ClCompile Include="src\racing\race_logic.c" />
+    <ClCompile Include="src\racing\render_courses.c" />
+    <ClCompile Include="src\racing\skybox_and_splitscreen.c" />
+    <ClCompile Include="courses\courseTable.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_banshee_boardwalk_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_banshee_boardwalk_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_banshee_boardwalk_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_banshee_boardwalk_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_banshee_boardwalk_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_big_donut_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_big_donut_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_big_donut_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_big_donut_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_big_donut_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_block_fort_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_block_fort_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_block_fort_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_block_fort_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_block_fort_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_bowsers_castle_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_bowsers_castle_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_bowsers_castle_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_bowsers_castle_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_bowsers_castle_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_choco_mountain_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_choco_mountain_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_choco_mountain_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_choco_mountain_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_choco_mountain_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_dks_jungle_parkway_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_dks_jungle_parkway_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_dks_jungle_parkway_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_dks_jungle_parkway_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_dks_jungle_parkway_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_double_deck_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_double_deck_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_double_deck_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_double_deck_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_double_deck_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_frappe_snowland_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_frappe_snowland_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_frappe_snowland_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_frappe_snowland_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_frappe_snowland_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_kalimari_desert_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_kalimari_desert_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_kalimari_desert_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_kalimari_desert_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_kalimari_desert_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_koopa_troopa_beach_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_koopa_troopa_beach_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_koopa_troopa_beach_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_koopa_troopa_beach_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_koopa_troopa_beach_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_luigi_raceway_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_luigi_raceway_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_luigi_raceway_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_luigi_raceway_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_luigi_raceway_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_mario_raceway_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_mario_raceway_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_mario_raceway_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_mario_raceway_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_mario_raceway_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_moo_moo_farm_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_moo_moo_farm_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_moo_moo_farm_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_moo_moo_farm_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_moo_moo_farm_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_rainbow_road_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_rainbow_road_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_rainbow_road_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_rainbow_road_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_rainbow_road_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_royal_raceway_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_royal_raceway_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_royal_raceway_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_royal_raceway_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_royal_raceway_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_sherbet_land_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_sherbet_land_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_sherbet_land_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_sherbet_land_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_sherbet_land_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_skyscraper_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_skyscraper_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_skyscraper_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_skyscraper_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_skyscraper_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_toads_turnpike_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_toads_turnpike_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_toads_turnpike_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_toads_turnpike_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_toads_turnpike_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_wario_stadium_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_wario_stadium_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_wario_stadium_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_wario_stadium_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_wario_stadium_course_textures.linkonly.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_yoshi_valley_course_data.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_yoshi_valley_course_offsets.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_yoshi_valley_course_displaylists.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_yoshi_valley_course_vertices.inc.c" />
+    <ClCompile Include="Platform\xbox\gen\courses_yoshi_valley_course_textures.linkonly.c" />
+    <ClCompile Include="assets\code\ceremony_data\ceremony_data.c" />
+    <ClCompile Include="assets\code\common_data\common_data.c" />
+    <ClCompile Include="assets\code\data_800E45C0\data_800E45C0.c" />
+    <ClCompile Include="assets\code\data_800E8700\data_800E8700.c" />
+    <ClCompile Include="assets\code\rainbow_road_tluts\rainbow_road_tluts.c" />
+    <ClCompile Include="assets\code\startup_logo\startup_logo.c" />
+    <ClCompile Include="Platform\xbox\gfx_nv2a.cpp" />
+    <ClCompile Include="Platform\xbox\gfx_xbox.c" />
+    <ClCompile Include="Platform\xbox\kos_xbox.c" />
+    <ClCompile Include="src\staff_ghosts.c" />
+    <ClCompile Include="Platform\xbox\xbox_savegame.c" />
+    <ClCompile Include="Platform\xbox\stubs_xbox.c" />
+    <ClCompile Include="courses\staff_ghost_data.c" />
+    <ClCompile Include="Platform\xbox\gen_seg\ceremony_data_blob.c" />
+    <ClCompile Include="Platform\xbox\gen_seg\common_data_blob.c" />
+    <ClCompile Include="Platform\xbox\gen_seg\data_segment2_blob.c" />
+    <ClCompile Include="Platform\xbox\gen_seg\startup_logo_blob.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_course_player_selection.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_bowser_kart.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_donkeykong_kart.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_luigi_kart.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_mario_kart.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_peach_kart.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_toad_kart.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_wario_kart.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_karts_yoshi_kart.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_other_textures.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_texture_data_2.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_texture_tkmk00.c" />
+    <ClCompile Include="Platform\xbox\gen_asm\data_zkarts_all_kart.c" />
+    <ClCompile Include="Platform\xbox\gen\aica_sample_table.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Platform\xbox\arch\arch.h" />
+    <ClInclude Include="Platform\xbox\gen\aica_sample_table.h" />
+    <ClInclude Include="Platform\xbox\gen\saveimage.h" />
+    <ClInclude Include="Platform\xbox\gen\titleimage.h" />
+    <ClInclude Include="Platform\xbox\kos.h" />
+    <ClInclude Include="Platform\xbox\kos\oneshot_timer.h" />
+    <ClInclude Include="Platform\xbox\sh4zam.h" />
+    <ClInclude Include="Platform\xbox\xbox_debug.h" />
+    <ClInclude Include="courses\all_course_data.h" />
+    <ClInclude Include="courses\all_course_model.h" />
+    <ClInclude Include="courses\all_course_offsets.h" />
+    <ClInclude Include="courses\all_course_packed.h" />
+    <ClInclude Include="courses\banshee_boardwalk\course_data.h" />
+    <ClInclude Include="courses\banshee_boardwalk\course_displaylists.inc.h" />
+    <ClInclude Include="courses\banshee_boardwalk\course_textures.linkonly.h" />
+    <ClInclude Include="courses\big_donut\course_data.h" />
+    <ClInclude Include="courses\big_donut\course_displaylists.inc.h" />
+    <ClInclude Include="courses\big_donut\course_textures.linkonly.h" />
+    <ClInclude Include="courses\block_fort\course_data.h" />
+    <ClInclude Include="courses\block_fort\course_displaylists.inc.h" />
+    <ClInclude Include="courses\block_fort\course_textures.linkonly.h" />
+    <ClInclude Include="courses\bowsers_castle\course_data.h" />
+    <ClInclude Include="courses\bowsers_castle\course_displaylists.inc.h" />
+    <ClInclude Include="courses\bowsers_castle\course_textures.linkonly.h" />
+    <ClInclude Include="courses\choco_mountain\course_data.h" />
+    <ClInclude Include="courses\choco_mountain\course_displaylists.inc.h" />
+    <ClInclude Include="courses\choco_mountain\course_textures.linkonly.h" />
+    <ClInclude Include="courses\courseTable.h" />
+    <ClInclude Include="courses\dks_jungle_parkway\course_data.h" />
+    <ClInclude Include="courses\dks_jungle_parkway\course_displaylists.inc.h" />
+    <ClInclude Include="courses\dks_jungle_parkway\course_textures.linkonly.h" />
+    <ClInclude Include="courses\double_deck\course_data.h" />
+    <ClInclude Include="courses\double_deck\course_displaylists.inc.h" />
+    <ClInclude Include="courses\double_deck\course_textures.linkonly.h" />
+    <ClInclude Include="courses\frappe_snowland\course_data.h" />
+    <ClInclude Include="courses\frappe_snowland\course_displaylists.inc.h" />
+    <ClInclude Include="courses\frappe_snowland\course_textures.linkonly.h" />
+    <ClInclude Include="courses\kalimari_desert\course_data.h" />
+    <ClInclude Include="courses\kalimari_desert\course_displaylists.inc.h" />
+    <ClInclude Include="courses\kalimari_desert\course_textures.linkonly.h" />
+    <ClInclude Include="courses\koopa_troopa_beach\course_data.h" />
+    <ClInclude Include="courses\koopa_troopa_beach\course_displaylists.inc.h" />
+    <ClInclude Include="courses\koopa_troopa_beach\course_textures.linkonly.h" />
+    <ClInclude Include="courses\luigi_raceway\course_data.h" />
+    <ClInclude Include="courses\luigi_raceway\course_displaylists.inc.h" />
+    <ClInclude Include="courses\luigi_raceway\course_textures.linkonly.h" />
+    <ClInclude Include="courses\mario_raceway\course_data.h" />
+    <ClInclude Include="courses\mario_raceway\course_displaylists.inc.h" />
+    <ClInclude Include="courses\mario_raceway\course_textures.linkonly.h" />
+    <ClInclude Include="courses\moo_moo_farm\course_data.h" />
+    <ClInclude Include="courses\moo_moo_farm\course_displaylists.inc.h" />
+    <ClInclude Include="courses\moo_moo_farm\course_textures.linkonly.h" />
+    <ClInclude Include="courses\rainbow_road\course_data.h" />
+    <ClInclude Include="courses\rainbow_road\course_displaylists.inc.h" />
+    <ClInclude Include="courses\rainbow_road\course_textures.linkonly.h" />
+    <ClInclude Include="courses\royal_raceway\course_data.h" />
+    <ClInclude Include="courses\royal_raceway\course_displaylists.inc.h" />
+    <ClInclude Include="courses\royal_raceway\course_textures.linkonly.h" />
+    <ClInclude Include="courses\sherbet_land\course_data.h" />
+    <ClInclude Include="courses\sherbet_land\course_displaylists.inc.h" />
+    <ClInclude Include="courses\sherbet_land\course_textures.linkonly.h" />
+    <ClInclude Include="courses\skyscraper\course_data.h" />
+    <ClInclude Include="courses\skyscraper\course_displaylists.inc.h" />
+    <ClInclude Include="courses\skyscraper\course_textures.linkonly.h" />
+    <ClInclude Include="courses\toads_turnpike\course_data.h" />
+    <ClInclude Include="courses\toads_turnpike\course_displaylists.inc.h" />
+    <ClInclude Include="courses\toads_turnpike\course_textures.linkonly.h" />
+    <ClInclude Include="courses\wario_stadium\course_data.h" />
+    <ClInclude Include="courses\wario_stadium\course_displaylists.inc.h" />
+    <ClInclude Include="courses\wario_stadium\course_textures.linkonly.h" />
+    <ClInclude Include="courses\yoshi_valley\course_data.h" />
+    <ClInclude Include="courses\yoshi_valley\course_displaylists.inc.h" />
+    <ClInclude Include="courses\yoshi_valley\course_textures.linkonly.h" />
+    <ClInclude Include="include\PR\R4300.h" />
+    <ClInclude Include="include\PR\abi.h" />
+    <ClInclude Include="include\PR\gbi.h" />
+    <ClInclude Include="include\PR\gs2dex.h" />
+    <ClInclude Include="include\PR\gu.h" />
+    <ClInclude Include="include\PR\libaudio.h" />
+    <ClInclude Include="include\PR\libultra.h" />
+    <ClInclude Include="include\PR\mbi.h" />
+    <ClInclude Include="include\PR\os.h" />
+    <ClInclude Include="include\PR\os_ai.h" />
+    <ClInclude Include="include\PR\os_cache.h" />
+    <ClInclude Include="include\PR\os_cont.h" />
+    <ClInclude Include="include\PR\os_eeprom.h" />
+    <ClInclude Include="include\PR\os_exception.h" />
+    <ClInclude Include="include\PR\os_internal.h" />
+    <ClInclude Include="include\PR\os_libc.h" />
+    <ClInclude Include="include\PR\os_message.h" />
+    <ClInclude Include="include\PR\os_misc.h" />
+    <ClInclude Include="include\PR\os_pi.h" />
+    <ClInclude Include="include\PR\os_rdp.h" />
+    <ClInclude Include="include\PR\os_thread.h" />
+    <ClInclude Include="include\PR\os_time.h" />
+    <ClInclude Include="include\PR\os_tlb.h" />
+    <ClInclude Include="include\PR\os_vi.h" />
+    <ClInclude Include="include\PR\rcp.h" />
+    <ClInclude Include="include\PR\sptask.h" />
+    <ClInclude Include="include\PR\ucode.h" />
+    <ClInclude Include="include\PR\ultratypes.h" />
+    <ClInclude Include="include\actor_types.h" />
+    <ClInclude Include="include\align_asset_macro.h" />
+    <ClInclude Include="include\assets\ceremony_data.h" />
+    <ClInclude Include="include\assets\ceremony_rsp_init_80284EE0.h" />
+    <ClInclude Include="include\assets\common_data.h" />
+    <ClInclude Include="include\assets\data_800E45C0.h" />
+    <ClInclude Include="include\assets\data_800E8700.h" />
+    <ClInclude Include="include\assets\rainbow_road_tluts.h" />
+    <ClInclude Include="include\assets\startup_logo.h" />
+    <ClInclude Include="include\bomb_kart.h" />
+    <ClInclude Include="include\buffer_sizes.h" />
+    <ClInclude Include="include\common_structs.h" />
+    <ClInclude Include="include\config.h" />
+    <ClInclude Include="include\course.h" />
+    <ClInclude Include="include\course_offsets.h" />
+    <ClInclude Include="include\debug.h" />
+    <ClInclude Include="include\decode.h" />
+    <ClInclude Include="include\defines.h" />
+    <ClInclude Include="include\kart_attributes.h" />
+    <ClInclude Include="include\kos_undef.h" />
+    <ClInclude Include="include\libc\math.h" />
+    <ClInclude Include="include\libc\stdarg.h" />
+    <ClInclude Include="include\libc\stddef.h" />
+    <ClInclude Include="include\libc\stdio.h" />
+    <ClInclude Include="include\libc\stdlib.h" />
+    <ClInclude Include="include\libc\string.h" />
+    <ClInclude Include="include\macros.h" />
+    <ClInclude Include="include\mk64.h" />
+    <ClInclude Include="include\objects.h" />
+    <ClInclude Include="include\path.h" />
+    <ClInclude Include="include\save_data.h" />
+    <ClInclude Include="include\segments.h" />
+    <ClInclude Include="include\sh4zam.h" />
+    <ClInclude Include="include\sincoss.h" />
+    <ClInclude Include="include\sounds.h" />
+    <ClInclude Include="include\spline.h" />
+    <ClInclude Include="include\ultra64.h" />
+    <ClInclude Include="include\vehicles.h" />
+    <ClInclude Include="src\animation.h" />
+    <ClInclude Include="src\audio\aica_synth.h" />
+    <ClInclude Include="src\audio\data.h" />
+    <ClInclude Include="src\audio\effects.h" />
+    <ClInclude Include="src\audio\external.h" />
+    <ClInclude Include="src\audio\heap.h" />
+    <ClInclude Include="src\audio\internal.h" />
+    <ClInclude Include="src\audio\load.h" />
+    <ClInclude Include="src\audio\mixer.h" />
+    <ClInclude Include="src\audio\playback.h" />
+    <ClInclude Include="src\audio\port_eu.h" />
+    <ClInclude Include="src\audio\seqplayer.h" />
+    <ClInclude Include="src\audio\synthesis.h" />
+    <ClInclude Include="src\buffers.h" />
+    <ClInclude Include="src\buffers\audio_heap.h" />
+    <ClInclude Include="src\buffers\random.h" />
+    <ClInclude Include="src\buffers\trig_tables.h" />
+    <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\camera_junk.h" />
+    <ClInclude Include="src\code_800029B0.h" />
+    <ClInclude Include="src\code_8003DC40.h" />
+    <ClInclude Include="src\code_80057C60.h" />
+    <ClInclude Include="src\code_8006E9C0.h" />
+    <ClInclude Include="src\code_80086E70.h" />
+    <ClInclude Include="src\code_80091440.h" />
+    <ClInclude Include="src\code_800AF9B0.h" />
+    <ClInclude Include="src\compression\libmio0.h" />
+    <ClInclude Include="src\compression\libtkmk00.h" />
+    <ClInclude Include="src\compression\utils.h" />
+    <ClInclude Include="src\cpu_vehicles_camera_path.h" />
+    <ClInclude Include="src\crash_screen.h" />
+    <ClInclude Include="src\data\path_spawn_metadata.h" />
+    <ClInclude Include="src\data\some_data.h" />
+    <ClInclude Include="src\data_segment2.h" />
+    <ClInclude Include="src\dcaudio\audio_api.h" />
+    <ClInclude Include="src\dcaudio\audio_dc.h" />
+    <ClInclude Include="src\dcprofiler.h" />
+    <ClInclude Include="src\debug\all_variables.h" />
+    <ClInclude Include="src\debug\crash_screen_enhancement.h" />
+    <ClInclude Include="src\effects.h" />
+    <ClInclude Include="src\ending\ceremony_and_credits.h" />
+    <ClInclude Include="src\ending\code_80280000.h" />
+    <ClInclude Include="src\ending\code_80281780.h" />
+    <ClInclude Include="src\ending\code_80281C40.h" />
+    <ClInclude Include="src\ending\credits.h" />
+    <ClInclude Include="src\ending\podium_ceremony_actors.h" />
+    <ClInclude Include="src\gfx\gfx_cc.h" />
+    <ClInclude Include="src\gfx\gfx_dc.h" />
+    <ClInclude Include="src\gfx\gfx_pc.h" />
+    <ClInclude Include="src\gfx\gfx_rendering_api.h" />
+    <ClInclude Include="src\gfx\gfx_screen_config.h" />
+    <ClInclude Include="src\gfx\gfx_window_manager_api.h" />
+    <ClInclude Include="src\gfx\gl_fast_vert.h" />
+    <ClInclude Include="src\kart_dma.h" />
+    <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\math_util_2.h" />
+    <ClInclude Include="src\menu_items.h" />
+    <ClInclude Include="src\menus.h" />
+    <ClInclude Include="src\os\bstring.h" />
+    <ClInclude Include="src\os\hardware.h" />
+    <ClInclude Include="src\os\libaudio_internal.h" />
+    <ClInclude Include="src\os\libultra_internal.h" />
+    <ClInclude Include="src\os\new_func.h" />
+    <ClInclude Include="src\os\piint.h" />
+    <ClInclude Include="src\os\printf.h" />
+    <ClInclude Include="src\player_controller.h" />
+    <ClInclude Include="src\profiler.h" />
+    <ClInclude Include="src\racing\actors.h" />
+    <ClInclude Include="src\racing\actors_extended.h" />
+    <ClInclude Include="src\racing\collision.h" />
+    <ClInclude Include="src\racing\math_util.h" />
+    <ClInclude Include="src\racing\memory.h" />
+    <ClInclude Include="src\racing\race_logic.h" />
+    <ClInclude Include="src\racing\render_courses.h" />
+    <ClInclude Include="src\racing\skybox_and_splitscreen.h" />
+    <ClInclude Include="src\render_objects.h" />
+    <ClInclude Include="src\render_player.h" />
+    <ClInclude Include="src\save.h" />
+    <ClInclude Include="src\spawn_players.h" />
+    <ClInclude Include="src\staff_ghosts.h" />
+    <ClInclude Include="src\textures.h" />
+    <ClInclude Include="src\update_objects.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Platform\xbox\titleimage.rdf" />
+    <None Include="Platform\xbox\saveimage.rdf" />
+    <None Include="rxdk.project.json" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

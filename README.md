@@ -99,6 +99,38 @@ missing.
 `--check` reporting "13 of 24 steps still to run" on a fully built tree is
 normal — those thirteen are the always-run ones.
 
+## Working in Visual Studio
+
+**Run `python setup.py` at least once first.** It produces everything the
+project compiles that is not in the repo: the 180 torch-generated sources,
+the `.incbin` payloads, the assembly wrappers under `Platform/xbox/gen*`, and
+the `dc_data` runtime set. None of that exists on a fresh clone, and Visual
+Studio does not know how to make it.
+
+After that, open `mk64x.sln` (RXDK for Visual Studio 2022 or 2026 with the
+Xbox platform installed). Build, Deploy and F5 go through the same RXDK
+engine `setup.py` uses, so a code change is an ordinary edit → Build → run
+loop. Re-run `setup.py` only when something upstream of the C code changes:
+the ROM, the asset yamls, or the tools that generate the wrappers.
+
+Same convention as RXDK-Samples: **`mk64x.vcxproj` is the authoritative
+project file**, and the committed `rxdk.project.json` is derived from it. The
+json is what `setup.py` and the VS Code extension read, on every platform,
+so after adding a source or changing a property in Visual Studio, regenerate
+it and commit both:
+
+```
+python tools/gen_manifest.py           # regenerate rxdk.project.json from the .vcxproj
+python tools/gen_manifest.py --check   # exit 1 if the committed json is stale
+```
+
+It runs the RXDK Xbox platform's `RxdkGenerateManifest` MSBuild target once
+per configuration and merges the pair, exactly as the samples' generator
+does, so it needs Windows with Visual Studio and the Xbox platform installed.
+Everyone else just uses the committed json. Visual Studio itself builds from
+`out/rxdk.manifest.json`, which it derives from the `.vcxproj` on every build;
+it never writes `rxdk.project.json`.
+
 ## What the build actually does
 
 Roughly: build the native helpers → run torch → extract assets from the ROM →
