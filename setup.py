@@ -139,6 +139,79 @@ def patch_torch_cmake():
     print("    patched torch's CMakeLists.txt to link wininet")
 
 
+def have_native_cxx():
+    """Is there a C++ toolchain CMake's default generator will find?
+
+    Windows: CMake defaults to the Visual Studio generator and locates VS
+    through the installer's registry, so PATH says nothing -- ask vswhere
+    (installed with every VS 2017+ and Build Tools) whether an instance with
+    the C++ compiler component exists. `cl` on PATH (a developer prompt)
+    counts too. Elsewhere: a C++ compiler under one of its usual names.
+    """
+    if hostenv.WIN:
+        if shutil.which("cl"):
+            return True
+        pf86 = os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")
+        vswhere = os.path.join(pf86, "Microsoft Visual Studio", "Installer",
+                               "vswhere.exe")
+        if not os.path.exists(vswhere):
+            return False
+        r = subprocess.run(
+            [vswhere, "-latest", "-products", "*", "-requires",
+             "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+             "-property", "installationPath"],
+            capture_output=True, text=True)
+        return r.returncode == 0 and bool(r.stdout.strip())
+    return any(shutil.which(c) for c in ("c++", "g++", "clang++"))
+
+
+NINJA_VERSION = "1.12.1"
+NINJA_URL = ("https://github.com/ninja-build/ninja/releases/download/v%s/%s"
+             % (NINJA_VERSION, "%s"))
+
+
+def ensure_ninja():
+    """Return a ninja binary, downloading the release build if there is none.
+
+    The zig route needs a CMake generator that is not Visual Studio, and
+    Ninja is the one that works the same on every platform. It is a single
+    static executable published per OS by the ninja project, so fetching it
+    into tools/ninja/ (gitignored) is the same class of dependency as fetching
+    torch itself, only smaller.
+    """
+    found = shutil.which("ninja")
+    if found:
+        return found
+    local = os.path.join(ROOT, "tools", "ninja", "ninja" + EXE)
+    if os.path.exists(local):
+        return local
+
+    import platform, urllib.request, zipfile
+    arm = platform.machine().lower() in ("arm64", "aarch64")
+    if hostenv.WIN:
+        asset = "ninja-winarm64.zip" if arm else "ninja-win.zip"
+    elif hostenv.MAC:
+        asset = "ninja-mac.zip"                 # universal binary
+    else:
+        asset = "ninja-linux-aarch64.zip" if arm else "ninja-linux.zip"
+    url = NINJA_URL % asset
+    print("    fetching ninja %s (%s)" % (NINJA_VERSION, asset))
+    os.makedirs(os.path.dirname(local), exist_ok=True)
+    try:
+        with urllib.request.urlopen(url) as resp:
+            data = resp.read()
+    except Exception as e:
+        raise SystemExit(
+            "%s! could not download ninja from %s%s\n  (%s)\n"
+            "  Install ninja yourself and put it on PATH, then re-run."
+            % (RED, url, OFF, e))
+    with zipfile.ZipFile(io.BytesIO(data)) as z:
+        z.extract("ninja" + EXE, os.path.dirname(local))
+    if not hostenv.WIN:
+        os.chmod(local, 0o755)
+    return local
+
+
 def ensure_torch():
     """Return a built torch, fetching and building it if necessary.
 
@@ -165,23 +238,57 @@ def ensure_torch():
 
     need("cmake", "build torch")
     print("    building torch (one-off, a few minutes)")
-    # CMAKE_BUILD_TYPE is what single-config generators (Unix Makefiles,
-    # Ninja) read; --config is what multi-config ones (Visual Studio, Xcode)
-    # read. Passing both is harmless and means the same two commands work on
-    # every platform without asking which generator CMake picked.
-    r = subprocess.run(["cmake", "-S", "tools/torch", "-B", TORCH_BUILD,
-                        "-DCMAKE_BUILD_TYPE=Release"], cwd=ROOT)
-    if r.returncode != 0:
-        raise SystemExit(
-            "%s! cmake could not configure torch.%s\n\n"
-            "  torch is a C++20 project and needs a full native toolchain:\n"
-            "    Windows  Visual Studio 2022 with the 'Desktop development\n"
-            "             with C++' workload (the Build Tools edition is\n"
-            "             enough; CMake finds it without any PATH setup)\n"
-            "    macOS    Xcode command line tools: xcode-select --install\n"
-            "    Linux    gcc or clang, e.g. apt install build-essential\n\n"
-            "  The message above from CMake says which part is missing."
-            % (RED, OFF))
+
+    # Two ways to build it. The native toolchain (MSVC / Xcode / gcc) is the
+    # one torch is developed against, so it is used when present. When it is
+    # not -- typically a Windows machine with no Visual Studio, where CMake
+    # fails with a wall of "Compiler: cl ... The system cannot find the file
+    # specified" -- the build falls back to the zig that RXDK already
+    # installed: zig cc/c++ is a complete Clang with its own libc++, and the
+    # only other thing CMake needs is a build tool, which ensure_ninja()
+    # downloads. Nothing to install by hand either way.
+    #
+    # CMAKE_BUILD_TYPE is what single-config generators (Makefiles, Ninja)
+    # read; --config is what multi-config ones (Visual Studio, Xcode) read.
+    # Passing both is harmless and means the same commands work everywhere.
+    configure = ["cmake", "-S", "tools/torch", "-B", TORCH_BUILD,
+                 "-DCMAKE_BUILD_TYPE=Release"]
+    ok = False
+    if have_native_cxx():
+        ok = subprocess.run(configure, cwd=ROOT).returncode == 0
+        if not ok:
+            print("    %scmake could not configure torch with the system "
+                  "toolchain; trying zig%s" % (YELLOW, OFF))
+    if not ok:
+        zig = hostenv.zig()
+        if not zig:
+            raise SystemExit(
+                "%s! no C++ toolchain for torch.%s\n\n"
+                "  torch is a C++20 project. Either install RXDK (its zig is\n"
+                "  enough: setup.py builds torch with it) or a native one:\n"
+                "    Windows  Visual Studio 2022 with the 'Desktop development\n"
+                "             with C++' workload (the Build Tools edition is\n"
+                "             enough; CMake finds it without any PATH setup)\n"
+                "    macOS    Xcode command line tools: xcode-select --install\n"
+                "    Linux    gcc or clang, e.g. apt install build-essential\n"
+                % (RED, OFF))
+        ninja = ensure_ninja()
+        print("    building torch with zig (%s)" % zig)
+        # A generator switch needs a clean cache, and a half-configured MSVC
+        # tree must not be reused with a different compiler.
+        shutil.rmtree(TORCH_BUILD, ignore_errors=True)
+        # CMAKE_<LANG>_COMPILER accepts a list: the program plus its arguments.
+        # CMAKE_PROJECT_torch_INCLUDE splices tools/cmake/torch-zig.cmake into
+        # torch's configure right after project(); see that file for the two
+        # things Clang 21 needs changed. tools/cmake/HandleCompilerRT.cmake is
+        # the file torch include()s when it sees Clang on Windows.
+        sh("cmake", "-S", "tools/torch", "-B", TORCH_BUILD, "-G", "Ninja",
+           "-DCMAKE_MAKE_PROGRAM=" + ninja,
+           "-DCMAKE_C_COMPILER=%s;cc" % zig,
+           "-DCMAKE_CXX_COMPILER=%s;c++" % zig,
+           "-DCMAKE_BUILD_TYPE=Release",
+           "-DCMAKE_PROJECT_torch_INCLUDE="
+           + os.path.join(ROOT, "tools", "cmake", "torch-zig.cmake"))
     sh("cmake", "--build", TORCH_BUILD, "--config", "Release", "--parallel")
 
     t = torch_exe()

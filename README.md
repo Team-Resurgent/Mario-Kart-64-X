@@ -22,11 +22,18 @@ yourself, or don't play it.
 | **[RXDK](https://github.com/Team-Resurgent/RXDK-VS20XX)** | The Xbox toolchain, from either the VS Code or the Visual Studio extension. `setup.py` finds `Rxdk.Cli` where the extension staged it (`%ProgramData%\RXDK\tools` on Windows, `~/Library/Application Support/RXDK/tools` on macOS, `~/.local/share/rxdk/tools` on Linux) and honours `RXDK_STAGED_TOOLS` |
 | **Python 3** | Drives the asset pipeline. (Pillow is needed only by `tools/make_xbx.py`, the art tool that regenerates the committed dashboard-icon BMPs; the build itself does not import it) |
 | **git** | `setup.py` uses it to fetch `torch` on the first run |
-| **CMake + a C++ compiler** | Used once, to build `torch`. Windows: Visual Studio 2022 with the C++ workload (Build Tools is enough). macOS: `xcode-select --install`. Linux: `build-essential` or clang |
+| **CMake** | Used once, to build `torch` |
 
 Nothing else. The six small native asset tools are compiled by `setup.py`
 with RXDK's own `zig cc`, so no MinGW, MSYS2 or `make` install is needed.
 `$CC`, or `cc`/`gcc`/`clang` on PATH, are used if you prefer them.
+
+`torch` is a C++20 project. If a native toolchain is present it is used:
+Visual Studio 2022 with the "Desktop development with C++" workload (the free
+Build Tools edition is enough) on Windows, Xcode command line tools on macOS,
+gcc or clang on Linux. If there is none, `setup.py` builds torch with RXDK's
+zig instead, downloading the `ninja` build tool into `tools/ninja/` to drive
+CMake. So a Windows machine with no Visual Studio at all still builds.
 
 A `.n64` or `.v64` dump will **not** work. Those are byte-swapped, so every
 offset the extractors use lands in the wrong place. Convert to `.z64` first.

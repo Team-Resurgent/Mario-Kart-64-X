@@ -215,3 +215,7 @@ tools/torch/
 /Platform/xbox/gen/*.xbx
 /Platform/xbox/gen/titleimage.h
 /Platform/xbox/gen/saveimage.h
+
+# ninja, downloaded by setup.py when torch has to be built with zig (no native
+# C++ toolchain). A release binary, not a source tree.
+/tools/ninja/
