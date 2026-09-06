@@ -79,6 +79,23 @@ def main():
     name = D.get("name") or os.path.splitext(PROJECT)[0]
     for body in (D, R):
         body.pop("name", None)              # shared at the top level
+
+    # Forward slashes only. The .vcxproj lists items MSBuild-style with
+    # backslashes and the RxdkGenerateManifest target copies them verbatim,
+    # but the build engine only ever converts '/' to the host separator --
+    # never '\' -- so a backslash path is a literal backslash on Linux and
+    # macOS, where the file is then not found. Every string in the manifest
+    # is either a path or something that never contains a backslash (defines,
+    # library names, the title name), so a blanket conversion is safe.
+    def slash(v):
+        if isinstance(v, str):
+            return v.replace("\\", "/")
+        if isinstance(v, list):
+            return [slash(x) for x in v]
+        if isinstance(v, dict):
+            return {k: slash(x) for k, x in v.items()}
+        return v
+    D, R = slash(D), slash(R)
     manifest = {
         "name": name,
         "defaultConfiguration": default,
