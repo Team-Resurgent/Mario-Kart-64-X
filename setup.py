@@ -214,6 +214,70 @@ def ensure_ninja():
     return local
 
 
+CMAKE_VERSION = "3.31.5"
+CMAKE_URL = ("https://github.com/Kitware/CMake/releases/download/v%s/cmake-%s-%s"
+             % (CMAKE_VERSION, CMAKE_VERSION, "%s"))
+
+
+def ensure_cmake():
+    """Return a cmake binary, downloading Kitware's portable build if needed.
+
+    A machine with no Visual Studio usually has no CMake either. Kitware
+    publishes a self-contained archive per platform -- no installer, no
+    registry, just bin/cmake -- so it goes into tools/cmake-bin/ (gitignored)
+    the same way ninja does. ~50 MB, once.
+    """
+    found = shutil.which("cmake")
+    if found:
+        return found
+    root = os.path.join(ROOT, "tools", "cmake-bin")
+
+    def portable():
+        # Windows/Linux archives unpack to cmake-<ver>-<os>/bin/cmake; the
+        # macOS one is an app bundle with bin/ inside Contents/.
+        hits = glob.glob(os.path.join(root, "cmake-*", "bin", "cmake" + EXE))
+        hits += glob.glob(os.path.join(root, "cmake-*", "CMake.app", "Contents",
+                                       "bin", "cmake"))
+        return hits[0] if hits else None
+
+    cm = portable()
+    if cm:
+        return cm
+
+    import platform, tarfile, urllib.request, zipfile
+    arm = platform.machine().lower() in ("arm64", "aarch64")
+    if hostenv.WIN:
+        asset = "windows-arm64.zip" if arm else "windows-x86_64.zip"
+    elif hostenv.MAC:
+        asset = "macos-universal.tar.gz"
+    else:
+        asset = "linux-aarch64.tar.gz" if arm else "linux-x86_64.tar.gz"
+    url = CMAKE_URL % asset
+    print("    fetching cmake %s (%s, ~50 MB)" % (CMAKE_VERSION, asset))
+    os.makedirs(root, exist_ok=True)
+    try:
+        with urllib.request.urlopen(url) as resp:
+            data = resp.read()
+    except Exception as e:
+        raise SystemExit(
+            "%s! could not download cmake from %s%s\n  (%s)\n"
+            "  Install CMake yourself (cmake.org) and put it on PATH, then "
+            "re-run." % (RED, url, OFF, e))
+    if asset.endswith(".zip"):
+        with zipfile.ZipFile(io.BytesIO(data)) as z:
+            z.extractall(root)
+    else:
+        with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as t:
+            t.extractall(root)
+    cm = portable()
+    if not cm:
+        raise SystemExit("%s! cmake archive had an unexpected layout under %s%s"
+                         % (RED, root, OFF))
+    if not hostenv.WIN:
+        os.chmod(cm, 0o755)
+    return cm
+
+
 def ensure_torch():
     """Return a built torch, fetching and building it if necessary.
 
@@ -238,7 +302,7 @@ def ensure_torch():
 
     patch_torch_cmake()
 
-    need("cmake", "build torch")
+    cmake = ensure_cmake()
     print("    building torch (one-off, a few minutes)")
 
     # Two ways to build it. The native toolchain (MSVC / Xcode / gcc) is the
@@ -248,12 +312,13 @@ def ensure_torch():
     # specified" -- the build falls back to the zig that RXDK already
     # installed: zig cc/c++ is a complete Clang with its own libc++, and the
     # only other thing CMake needs is a build tool, which ensure_ninja()
-    # downloads. Nothing to install by hand either way.
+    # downloads. CMake itself is downloaded too when absent (ensure_cmake).
+    # Nothing to install by hand either way.
     #
     # CMAKE_BUILD_TYPE is what single-config generators (Makefiles, Ninja)
     # read; --config is what multi-config ones (Visual Studio, Xcode) read.
     # Passing both is harmless and means the same commands work everywhere.
-    configure = ["cmake", "-S", "tools/torch", "-B", TORCH_BUILD,
+    configure = [cmake, "-S", "tools/torch", "-B", TORCH_BUILD,
                  "-DCMAKE_BUILD_TYPE=Release"]
     ok = False
     if have_native_cxx() and not FORCE_ZIG_TORCH:
@@ -284,14 +349,14 @@ def ensure_torch():
         # torch's configure right after project(); see that file for the two
         # things Clang 21 needs changed. tools/cmake/HandleCompilerRT.cmake is
         # the file torch include()s when it sees Clang on Windows.
-        sh("cmake", "-S", "tools/torch", "-B", TORCH_BUILD, "-G", "Ninja",
+        sh(cmake, "-S", "tools/torch", "-B", TORCH_BUILD, "-G", "Ninja",
            "-DCMAKE_MAKE_PROGRAM=" + ninja,
            "-DCMAKE_C_COMPILER=%s;cc" % zig,
            "-DCMAKE_CXX_COMPILER=%s;c++" % zig,
            "-DCMAKE_BUILD_TYPE=Release",
            "-DCMAKE_PROJECT_torch_INCLUDE="
            + os.path.join(ROOT, "tools", "cmake", "torch-zig.cmake"))
-    sh("cmake", "--build", TORCH_BUILD, "--config", "Release", "--parallel")
+    sh(cmake, "--build", TORCH_BUILD, "--config", "Release", "--parallel")
 
     t = torch_exe()
     if not t:

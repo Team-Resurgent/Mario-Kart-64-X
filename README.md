@@ -22,7 +22,7 @@ yourself, or don't play it.
 | **[RXDK](https://github.com/Team-Resurgent/RXDK-VS20XX)** | The Xbox toolchain, from either the VS Code or the Visual Studio extension. `setup.py` finds `Rxdk.Cli` where the extension staged it (`%ProgramData%\RXDK\tools` on Windows, `~/Library/Application Support/RXDK/tools` on macOS, `~/.local/share/rxdk/tools` on Linux) and honours `RXDK_STAGED_TOOLS` |
 | **Python 3** | Drives the asset pipeline. (Pillow is needed only by `tools/make_xbx.py`, the art tool that regenerates the committed dashboard-icon BMPs; the build itself does not import it) |
 | **git** | `setup.py` uses it to fetch `torch` on the first run |
-| **CMake** | Used once, to build `torch` |
+| **CMake** | Used once, to build `torch`. Optional: if none is on PATH, `setup.py` downloads Kitware's portable build into `tools/cmake-bin/` |
 
 Nothing else. The six small native asset tools are compiled by `setup.py`
 with RXDK's own `zig cc`, so no MinGW, MSYS2 or `make` install is needed.
@@ -88,6 +88,7 @@ python setup.py --check        # list what is missing, change nothing
 python setup.py --force        # re-run every step, even satisfied ones
 python setup.py --skip-build   # generate assets, stop before RXDK
 python setup.py --config Debug # Debug instead of Release
+python setup.py --zig-torch    # build torch with RXDK's zig even if Visual Studio exists
 ```
 
 Re-running is cheap and safe. Steps that can be skipped declare their outputs

@@ -219,3 +219,6 @@ tools/torch/
 # ninja, downloaded by setup.py when torch has to be built with zig (no native
 # C++ toolchain). A release binary, not a source tree.
 /tools/ninja/
+
+# Portable CMake, downloaded by setup.py when none is on PATH (see ensure_cmake).
+/tools/cmake-bin/
