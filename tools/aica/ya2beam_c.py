@@ -4,7 +4,7 @@ ctypes bridge to the C beam encoder (ya2beam.c). Drop-in for yamaha_adpcm_v2.enc
 same (bytes, nsamples) return and byte-identical output, but ~100x faster.
 
 The shared library (.so / .dylib / .dll) is built on first use with whatever C
-compiler tools/hostenv.py finds -- $CC, RXDK's zig, or cc/gcc/clang. If the
+compiler tools/hostenv.py finds -- $CC, RXDK's clang, or cc/gcc/clang. If the
 build or load fails for any reason we transparently fall back to the pure-Python
 ya2 encoder, so a machine without a compiler still works (just slowly).
 """
@@ -35,7 +35,7 @@ def _build_so():
             return True
         cc = hostenv.cc_command()
         if cc is None:
-            raise RuntimeError("no C compiler: set CC, install RXDK (zig), "
+            raise RuntimeError("no C compiler: set CC, install RXDK (clang), "
                                "or put cc/gcc/clang on PATH")
         tmp = "%s.tmp%d" % (_SO, os.getpid())
         subprocess.run(cc + ["-O3", "-shared", "-fPIC", "-o", tmp, _SRC],

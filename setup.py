@@ -6,7 +6,7 @@
     python setup.py --skip-build   # regenerate assets, stop before RXDK
     python setup.py --force        # redo every step even if outputs exist
     python setup.py --config Debug # Debug instead of Release
-    python setup.py --zig-torch    # build torch with zig, not Visual Studio
+    python setup.py --native-torch # build torch with the native toolchain, not RXDK clang
 
 This project ships as SOURCE ONLY. Nothing ROM-derived is in the repository,
 so a clean clone will not build until you supply `baserom.us.z64` yourself and
@@ -72,7 +72,7 @@ ROM_MD5 = "3a67d9986f54eb282924fca4cd5f6dff"
 RXDK = hostenv.rxdk_cli()
 EXE = hostenv.EXE
 TORCH_BUILD = "tools/torch/build"
-FORCE_ZIG_TORCH = False             # --zig-torch; see ensure_torch()
+FORCE_NATIVE_TORCH = False          # --native-torch; see ensure_torch()
 
 # torch extracts the ROM into ~180 source files. It is fetched and built by
 # this script rather than carried as a git submodule: a submodule would still
@@ -175,7 +175,7 @@ NINJA_URL = ("https://github.com/ninja-build/ninja/releases/download/v%s/%s"
 def ensure_ninja():
     """Return a ninja binary, downloading the release build if there is none.
 
-    The zig route needs a CMake generator that is not Visual Studio, and
+    The clang route needs a CMake generator that is not Visual Studio, and
     Ninja is the one that works the same on every platform. It is a single
     static executable published per OS by the ninja project, so fetching it
     into tools/ninja/ (gitignored) is the same class of dependency as fetching
@@ -305,57 +305,53 @@ def ensure_torch():
     cmake = ensure_cmake()
     print("    building torch (one-off, a few minutes)")
 
-    # Two ways to build it. The native toolchain (MSVC / Xcode / gcc) is the
-    # one torch is developed against, so it is used when present. When it is
-    # not -- typically a Windows machine with no Visual Studio, where CMake
-    # fails with a wall of "Compiler: cl ... The system cannot find the file
-    # specified" -- the build falls back to the zig that RXDK already
-    # installed: zig cc/c++ is a complete Clang with its own libc++, and the
-    # only other thing CMake needs is a build tool, which ensure_ninja()
-    # downloads. CMake itself is downloaded too when absent (ensure_cmake).
-    # Nothing to install by hand either way.
+    # Built cross-platform with RXDK's host-capable clang + Ninja (no MSBuild):
+    # clang/clang++ with its own libc++ compiles torch's C++20 on every OS -- on
+    # Windows through the mingw sysroot bundled in the RXDK LLVM package, on
+    # Linux/macOS through the system sysroot. The only other thing CMake needs is
+    # a build tool, which ensure_ninja() downloads; CMake itself is downloaded too
+    # when absent (ensure_cmake). --native-torch forces the system toolchain
+    # (MSVC/Xcode/gcc) instead, the only path that can pull in MSBuild. Nothing to
+    # install by hand either way.
     #
     # CMAKE_BUILD_TYPE is what single-config generators (Makefiles, Ninja)
     # read; --config is what multi-config ones (Visual Studio, Xcode) read.
     # Passing both is harmless and means the same commands work everywhere.
     configure = [cmake, "-S", "tools/torch", "-B", TORCH_BUILD,
                  "-DCMAKE_BUILD_TYPE=Release"]
-    ok = False
-    if have_native_cxx() and not FORCE_ZIG_TORCH:
-        ok = subprocess.run(configure, cwd=ROOT).returncode == 0
-        if not ok:
-            print("    %scmake could not configure torch with the system "
-                  "toolchain; trying zig%s" % (YELLOW, OFF))
-    if not ok:
-        zig = hostenv.zig()
-        if not zig:
-            raise SystemExit(
-                "%s! no C++ toolchain for torch.%s\n\n"
-                "  torch is a C++20 project. Either install RXDK (its zig is\n"
-                "  enough: setup.py builds torch with it) or a native one:\n"
-                "    Windows  Visual Studio 2022 with the 'Desktop development\n"
-                "             with C++' workload (the Build Tools edition is\n"
-                "             enough; CMake finds it without any PATH setup)\n"
-                "    macOS    Xcode command line tools: xcode-select --install\n"
-                "    Linux    gcc or clang, e.g. apt install build-essential\n"
-                % (RED, OFF))
+    # Cross-platform and MSBuild-free: build torch with RXDK's host-capable clang
+    # and Ninja on every OS. CMAKE_<LANG>_COMPILER takes the program plus required
+    # flags as a ;-list -- on Windows that carries the mingw --target/--sysroot
+    # hostenv adds, applied to every compile and link. torch-clang.cmake is spliced
+    # in right after project() for the Clang-on-Windows tweaks torch needs;
+    # tools/cmake/HandleCompilerRT.cmake is what torch include()s for Clang there.
+    cc = hostenv.cc_command()
+    cxx = hostenv.cxx_command()
+    if cc and cxx and not FORCE_NATIVE_TORCH:
         ninja = ensure_ninja()
-        print("    building torch with zig (%s)" % zig)
-        # A generator switch needs a clean cache, and a half-configured MSVC
-        # tree must not be reused with a different compiler.
+        print("    building torch with RXDK clang (%s)" % cc[0])
         shutil.rmtree(TORCH_BUILD, ignore_errors=True)
-        # CMAKE_<LANG>_COMPILER accepts a list: the program plus its arguments.
-        # CMAKE_PROJECT_torch_INCLUDE splices tools/cmake/torch-zig.cmake into
-        # torch's configure right after project(); see that file for the two
-        # things Clang 21 needs changed. tools/cmake/HandleCompilerRT.cmake is
-        # the file torch include()s when it sees Clang on Windows.
         sh(cmake, "-S", "tools/torch", "-B", TORCH_BUILD, "-G", "Ninja",
            "-DCMAKE_MAKE_PROGRAM=" + ninja,
-           "-DCMAKE_C_COMPILER=%s;cc" % zig,
-           "-DCMAKE_CXX_COMPILER=%s;c++" % zig,
+           "-DCMAKE_C_COMPILER=" + ";".join(cc),
+           "-DCMAKE_CXX_COMPILER=" + ";".join(cxx),
            "-DCMAKE_BUILD_TYPE=Release",
            "-DCMAKE_PROJECT_torch_INCLUDE="
-           + os.path.join(ROOT, "tools", "cmake", "torch-zig.cmake"))
+           + os.path.join(ROOT, "tools", "cmake", "torch-clang.cmake"))
+    else:
+        # Last resort when RXDK's clang is not installed and nothing usable is on
+        # PATH: let CMake find a native toolchain (system clang/gcc, or MSVC). This
+        # is the only branch that can pull in MSBuild, so it runs only here.
+        if not (have_native_cxx() and
+                subprocess.run(configure, cwd=ROOT).returncode == 0):
+            raise SystemExit(
+                "%s! no C++ toolchain for torch.%s\n\n"
+                "  torch is a C++20 project. Install RXDK (its clang builds torch\n"
+                "  on every OS with no MSVC/MSBuild) or a native toolchain:\n"
+                "    Windows  Visual Studio 2022, 'Desktop development with C++'\n"
+                "    macOS    xcode-select --install\n"
+                "    Linux    apt install build-essential\n"
+                % (RED, OFF))
     sh(cmake, "--build", TORCH_BUILD, "--config", "Release", "--parallel")
 
     t = torch_exe()
@@ -664,11 +660,12 @@ def build_steps(config, force=False):
 
     # The six helpers are single-TU C99 programs. Compile them directly rather
     # than through tools/Makefile: that needs make AND gcc on PATH, and a
-    # Windows machine that runs RXDK has neither as a rule -- it has zig,
-    # which is a complete Clang. hostenv.cc_command() prefers RXDK's own zig,
-    # then cc/gcc/clang, so the same code path works on every host without a
-    # MinGW or MSYS2 install. Same sources and flags as the Makefile, which
-    # is kept for anyone who prefers it.
+    # Windows machine that runs RXDK has neither as a rule -- it has RXDK's
+    # host-capable clang. hostenv.cc_command() prefers that clang (through the
+    # bundled mingw sysroot on Windows, the system sysroot elsewhere), then
+    # cc/gcc/clang, so the same code path works on every host without a MinGW or
+    # MSYS2 install. Same sources and flags as the Makefile, which is kept for
+    # anyone who prefers it.
     HELPERS = [
         ("mio0",                 ["libmio0.c"],               ["-DMIO0_STANDALONE"]),
         ("n64graphics",          ["n64graphics.c", "utils.c"], ["-DN64GRAPHICS_STANDALONE"]),
@@ -689,10 +686,10 @@ def build_steps(config, force=False):
                 "  n64graphics, mio0, tkmk00, n64cksum, extract_data_for_mio\n"
                 "  and displaylist_packer. Their C sources ARE in the repo but\n"
                 "  the binaries are not, so they have to be compiled once.\n\n"
-                "  Looked for: $CC, RXDK's zig (%s),\n"
-                "  then cc, gcc, clang on PATH. Installing RXDK is the easy\n"
-                "  fix; it brings zig, and zig cc compiles these.\n"
-                % (RED, OFF, hostenv.zig_install_root()))
+                "  Looked for: $CC, RXDK's clang (%s),\n"
+                "  then clang, cc, gcc on PATH. Installing RXDK is the easy\n"
+                "  fix; it brings a host-capable clang that compiles these.\n"
+                % (RED, OFF, hostenv.llvm_install_root()))
         print("    compiler: %s" % " ".join(cc))
         tools = os.path.join(ROOT, "tools")
         for name, srcs, flags in HELPERS:
@@ -975,12 +972,12 @@ def main():
     ap.add_argument("--force", action="store_true",
                     help="run every step even when its outputs already exist")
     ap.add_argument("--config", default="Release", choices=["Release", "Debug"])
-    ap.add_argument("--zig-torch", action="store_true",
-                    help="build torch with RXDK's zig even if Visual Studio / "
-                         "a native C++ toolchain is installed")
+    ap.add_argument("--native-torch", action="store_true",
+                    help="build torch with the native toolchain (system clang/gcc "
+                         "or MSVC) instead of RXDK's clang -- may pull in MSBuild")
     args = ap.parse_args()
-    global FORCE_ZIG_TORCH
-    FORCE_ZIG_TORCH = args.zig_torch
+    global FORCE_NATIVE_TORCH
+    FORCE_NATIVE_TORCH = args.native_torch
 
     os.chdir(ROOT)
     if not args.check:

@@ -11,10 +11,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import coff_section
 import hostenv
 
-ZIG = hostenv.zig()
-if not ZIG:
-    raise SystemExit("asm_segment: no zig found (RXDK_ZIG, %s, or PATH)"
-                     % hostenv.zig_install_root())
+CLANG = hostenv.clang()
+if not CLANG:
+    raise SystemExit("asm_segment: no clang found (set RXDK_LLVM, install RXDK, "
+                     "or put clang on PATH)")
 BS  = chr(92)
 ROOT = os.path.abspath(".")
 
@@ -46,7 +46,9 @@ def build(sp, dst):
     c = "__asm__(\n" + "".join('    "%s' % esc(l) + BS + 'n"\n' for l in lines) + ");\n"
     tmp_c = dst + ".gen.c"; tmp_o = dst + ".gen.obj"
     io.open(tmp_c, "w", encoding="utf-8", newline="\n").write(c)
-    r = subprocess.run([ZIG, "cc", "-std=c23", "-target", "x86-windows-gnu", "-O1",
+    # Freestanding compile to a COFF object (no link, no host libc) -- coff_section
+    # then pulls the .data out. RXDK's clang is the same Clang zig cc wrapped.
+    r = subprocess.run([CLANG, "-std=c23", "-target", "i686-pc-windows-gnu", "-O1",
                         "-ffreestanding", "-nostdinc", "-march=pentium3",
                         "-c", tmp_c, "-o", tmp_o], capture_output=True)
     if r.returncode != 0:

@@ -227,14 +227,15 @@
         "Platform/xbox/saveimage.rdf"
       ],
       "libraries": [
-        "libd3d8",
-        "libd3dx8",
-        "libxgraphics",
-        "libdsound",
-        "libxapi",
-        "libc",
-        "libcpp",
-        "libkernel"
+        "libxapid.lib",
+        "libd3d8d.lib",
+        "libd3dx8d.lib",
+        "libxgraphicsd.lib",
+        "libdsoundd.lib",
+        "libcd.lib",
+        "libcppd.lib",
+        "libkerneld.lib",
+        "libcompatd.lib"
       ],
       "includePaths": [
         "Platform/xbox",
@@ -254,6 +255,12 @@
         "_LANGUAGE_C=1",
         "_FINALROM=1",
         "SINCOSS_USE_FSCA=0"
+      ],
+      "compileFlags": [
+        "-Wno-incompatible-pointer-types",
+        "-Wno-int-conversion",
+        "-Wno-implicit-function-declaration",
+        "-Wno-incompatible-function-pointer-types"
       ],
       "cppStandard": "c++23",
       "exceptions": false,
@@ -504,14 +511,15 @@
         "Platform/xbox/saveimage.rdf"
       ],
       "libraries": [
-        "libd3d8",
-        "libd3dx8",
-        "libxgraphics",
-        "libdsound",
-        "libxapi",
-        "libc",
-        "libcpp",
-        "libkernel"
+        "libxapi.lib",
+        "libd3d8.lib",
+        "libd3dx8.lib",
+        "libxgraphics.lib",
+        "libdsound.lib",
+        "libc.lib",
+        "libcpp.lib",
+        "libkernel.lib",
+        "libcompat.lib"
       ],
       "includePaths": [
         "Platform/xbox",
@@ -531,6 +539,12 @@
         "_LANGUAGE_C=1",
         "_FINALROM=1",
         "SINCOSS_USE_FSCA=0"
+      ],
+      "compileFlags": [
+        "-Wno-incompatible-pointer-types",
+        "-Wno-int-conversion",
+        "-Wno-implicit-function-declaration",
+        "-Wno-incompatible-function-pointer-types"
       ],
       "cppStandard": "c++23",
       "exceptions": false,
