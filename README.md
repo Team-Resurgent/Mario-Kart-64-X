@@ -25,15 +25,15 @@ yourself, or don't play it.
 | **CMake** | Used once, to build `torch`. Optional: if none is on PATH, `setup.py` downloads Kitware's portable build into `tools/cmake-bin/` |
 
 Nothing else. The six small native asset tools are compiled by `setup.py`
-with RXDK's own `zig cc`, so no MinGW, MSYS2 or `make` install is needed.
-`$CC`, or `cc`/`gcc`/`clang` on PATH, are used if you prefer them.
+with RXDK's own host-capable `clang`, so no MinGW, MSYS2 or `make` install is
+needed. `$CC`, or `cc`/`gcc`/`clang` on PATH, are used if you prefer them.
 
-`torch` is a C++20 project. If a native toolchain is present it is used:
-Visual Studio 2022 with the "Desktop development with C++" workload (the free
-Build Tools edition is enough) on Windows, Xcode command line tools on macOS,
-gcc or clang on Linux. If there is none, `setup.py` builds torch with RXDK's
-zig instead, downloading the `ninja` build tool into `tools/ninja/` to drive
-CMake. So a Windows machine with no Visual Studio at all still builds.
+`torch` is a C++20 project, built by default with that same RXDK `clang`,
+downloading the `ninja` build tool into `tools/ninja/` to drive CMake. So a
+Windows machine with no Visual Studio at all still builds. Pass `--native-torch`
+to build it with a native toolchain instead: Visual Studio 2022 with the
+"Desktop development with C++" workload (the free Build Tools edition is enough)
+on Windows, Xcode command line tools on macOS, gcc or clang on Linux.
 
 A `.n64` or `.v64` dump will **not** work. Those are byte-swapped, so every
 offset the extractors use lands in the wrong place. Convert to `.z64` first.
@@ -88,7 +88,7 @@ python setup.py --check        # list what is missing, change nothing
 python setup.py --force        # re-run every step, even satisfied ones
 python setup.py --skip-build   # generate assets, stop before RXDK
 python setup.py --config Debug # Debug instead of Release
-python setup.py --zig-torch    # build torch with RXDK's zig even if Visual Studio exists
+python setup.py --native-torch # build torch with the native toolchain, not RXDK clang
 ```
 
 Re-running is cheap and safe. Steps that can be skipped declare their outputs
