@@ -331,13 +331,17 @@ def ensure_torch():
         ninja = ensure_ninja()
         print("    building torch with RXDK clang (%s)" % cc[0])
         shutil.rmtree(TORCH_BUILD, ignore_errors=True)
+        # CMake writes these paths verbatim into its CMake<LANG>Compiler.cmake files, where a Windows
+        # backslash path (C:\ProgramData\...) is an invalid escape ("\P") and aborts the configure.
+        # Pass every path forward-slashed -- clang accepts '/' on Windows, and it's a no-op elsewhere.
+        fwd = lambda s: s.replace("\\", "/")
         sh(cmake, "-S", "tools/torch", "-B", TORCH_BUILD, "-G", "Ninja",
-           "-DCMAKE_MAKE_PROGRAM=" + ninja,
-           "-DCMAKE_C_COMPILER=" + ";".join(cc),
-           "-DCMAKE_CXX_COMPILER=" + ";".join(cxx),
+           "-DCMAKE_MAKE_PROGRAM=" + fwd(ninja),
+           "-DCMAKE_C_COMPILER=" + fwd(";".join(cc)),
+           "-DCMAKE_CXX_COMPILER=" + fwd(";".join(cxx)),
            "-DCMAKE_BUILD_TYPE=Release",
            "-DCMAKE_PROJECT_torch_INCLUDE="
-           + os.path.join(ROOT, "tools", "cmake", "torch-clang.cmake"))
+           + fwd(os.path.join(ROOT, "tools", "cmake", "torch-clang.cmake")))
     else:
         # Last resort when RXDK's clang is not installed and nothing usable is on
         # PATH: let CMake find a native toolchain (system clang/gcc, or MSVC). This
