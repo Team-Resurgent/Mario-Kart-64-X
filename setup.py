@@ -622,10 +622,33 @@ def build_steps(config, force=False):
         if missing:
             print("    %sbootstrap: building once for the segment objects%s"
                   % (DIM, OFF))
+            # The RXDK build fails FAST on a missing source, so with the real blob wrappers
+            # absent it aborts before compiling ANY object -- including the four segment objects
+            # gen_segblobs needs (this is why the old "just run it and ignore failure" no longer
+            # left them behind). Drop empty placeholder wrappers first so every listed source
+            # exists and the build gets far enough to compile those objects; the run still fails at
+            # link (the placeholders define no segment data), which is fine. gen_segblobs then
+            # overwrites the placeholders in-place with the real blobs.
+            os.makedirs("Platform/xbox/gen_seg", exist_ok=True)
+            for s in missing:
+                io.open("Platform/xbox/gen_seg/%s_blob.c" % s, "w", encoding="utf-8").write(
+                    "/* placeholder for the bootstrap build; overwritten by gen_segblobs.py */\n")
             subprocess.run([RXDK, "build", "--project-root", ".",
                             "--configuration", config],
-                           cwd=ROOT, capture_output=True)   # failure expected
+                           cwd=ROOT, capture_output=True)   # link failure expected
         sh(py, "tools/gen_segblobs.py", env={"RXDK_OBJ_DIR": objdir})
+        # The bootstrap compiled the PLACEHOLDER wrappers into (empty) objects; gen_segblobs has now
+        # rewritten the wrapper sources, but a same-second mtime can leave the incremental build
+        # thinking those objects are current -- so it links the empty placeholders and the segment
+        # RomStart/RomEnd symbols come up undefined. Delete the blob objects so pass 1 recompiles the
+        # real wrappers. Harmless when the bootstrap didn't run (nothing matches).
+        if missing:
+            for f in glob.glob(os.path.join(objdir, "*gen_seg*blob.obj")) + \
+                     glob.glob(os.path.join(objdir, "*gen_seg*blob.obj.d")):
+                try:
+                    os.remove(f)
+                except OSError:
+                    pass
 
     def incbins_step():
         """Write <objdir>/incbins.txt, which gen_binassets reads and nothing

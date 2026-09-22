@@ -10,7 +10,7 @@ labels; this does the same through file-scope __asm__, since RXDK builds only
 Getting this wrong is not subtle: stubbing the RomStart symbols as empty arrays
 made mio0decode read a garbage header and write far outside its output buffer.
 """
-import io, os, subprocess, sys
+import glob, io, os, subprocess, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import coff_section
 import coff_reloc
@@ -29,14 +29,27 @@ os.makedirs(OUT, exist_ok=True)
 # Base addresses are the -Ttext values the Makefile links each segment at.
 # These objects carry relocations too (91, 74, 135 and 73 respectively), so
 # they need the same treatment as the course data.
+# (segment NAME (bare, used for the output blob names), symbol stem, base address)
 SEGMENTS = [
-    (OBJDIR + "/startup_logo.obj",   "_startupLogoSegment",    0x06000000),
-    (OBJDIR + "/ceremony_data.obj",  "_ceremonyDataSegment",   0x0B000000),
-    (OBJDIR + "/common_data.obj",    "_common_texturesSegment", 0x0D000000),
-    (OBJDIR + "/data_segment2.obj",  "_data_segment2Segment",  0x02000000),
+    ("startup_logo",   "_startupLogoSegment",     0x06000000),
+    ("ceremony_data",  "_ceremonyDataSegment",    0x0B000000),
+    ("common_data",    "_common_texturesSegment", 0x0D000000),
+    ("data_segment2",  "_data_segment2Segment",   0x02000000),
 ]
 
-RELOCATED, _UNRES = coff_reloc.build([(o, b) for o, _, b in SEGMENTS])
+# The RXDK engine names each object after its FULL source path (e.g. assets_code_ceremony_data_
+# ceremony_data.obj), not the bare stem, so a hardcoded "<seg>.obj" no longer exists. Accept a bare
+# object when present (legacy flat layout), else find the engine-named object ending in that stem.
+def _resolve_obj(name):
+    bare = os.path.join(OBJDIR, name + ".obj")
+    if os.path.exists(bare):
+        return bare
+    hits = sorted(glob.glob(os.path.join(OBJDIR, "*" + name + ".obj")))
+    return hits[0] if hits else bare
+
+_OBJ = {name: _resolve_obj(name) for name, _, _ in SEGMENTS}
+
+RELOCATED, _UNRES = coff_reloc.build([(_OBJ[n], b) for n, _, b in SEGMENTS])
 
 # Segments whose blob must be the ROM'S OWN bytes, not a re-pack of the
 # compiled C arrays. The common_data C arrays hold VALUE-order u16s (they are
@@ -45,7 +58,7 @@ RELOCATED, _UNRES = coff_reloc.build([(o, b) for o, _, b in SEGMENTS])
 # palettes: their draw DLs reload the TLUT from this segment copy. The ROM's
 # MIO0 block is the raw BE stream every segment consumer expects.
 ROM_TRUTH = {
-    OBJDIR + "/common_data.obj": 0x132B50,
+    _OBJ["common_data"]: 0x132B50,
 }
 ROM_PATH = "baserom.us.z64"
 
@@ -64,11 +77,12 @@ def rom_mio0(off):
         ct = (ct << 1) & 0xFFFF; lb += 1
     return d[:max(lp, cp, rp)]
 
-for obj, stem, _base in SEGMENTS:
+for name, stem, _base in SEGMENTS:
+    obj = _OBJ[name]
     if not os.path.exists(obj):
         print("  missing object:", obj); continue
-    binp  = os.path.join(OUT, os.path.basename(obj).replace(".obj", ".bin"))
-    mio0p = binp.replace(".bin", ".mio0")
+    binp  = os.path.join(OUT, name + ".bin")
+    mio0p = os.path.join(OUT, name + ".mio0")
     if obj in ROM_TRUTH:
         blob = rom_mio0(ROM_TRUTH[obj])
         io.open(mio0p, "wb").write(blob)
@@ -94,7 +108,7 @@ for obj, stem, _base in SEGMENTS:
         ".global _%s" % (stem + "RomEnd"),
         "_%sRomEnd:" % stem,
     ]
-    cp = os.path.join(OUT, os.path.basename(obj).replace(".obj", "_blob.c"))
+    cp = os.path.join(OUT, name + "_blob.c")
     import hashlib
     blob_hash = hashlib.sha1(io.open(mio0p, "rb").read()).hexdigest()[:16]
     with io.open(cp, "w", encoding="utf-8", newline="\n") as f:

@@ -92,9 +92,19 @@ made.append("adpcm_pool.bin")
 
 OBJDIR = os.environ.get("RXDK_OBJ_DIR") or ("out/Release" if os.path.isdir("out/Release") else "out")
 
+# The RXDK engine names each object after its FULL source path (e.g.
+# Platform_xbox_gen_courses_<c>_course_data.obj), so a short expected name is only a SUFFIX of the
+# real file. Accept the path as-is when it exists (legacy flat layout), else find the object whose
+# name ends with the expected basename.
+def _resolve_obj(path):
+    if os.path.exists(path):
+        return path
+    hits = sorted(glob.glob(os.path.join(OBJDIR, "*" + os.path.basename(path))))
+    return hits[0] if hits else path
+
 # --- segments compiled into objects by this build ---
-for obj, dst in ((OBJDIR + "/common_data.obj",   "common_data.bin"),
-                 (OBJDIR + "/ceremony_data.obj", "ceremony_data.bin")):
+for obj, dst in ((_resolve_obj(OBJDIR + "/common_data.obj"),   "common_data.bin"),
+                 (_resolve_obj(OBJDIR + "/ceremony_data.obj"), "ceremony_data.bin")):
     (made if objcopy(obj, os.path.join(OUT, dst)) else missed).append(dst)
 
 # --- per-course ---
@@ -119,16 +129,16 @@ for d in sorted(glob.glob("courses/*/")):
     # Relocate the whole course group together at the segment bases the
     # Makefile links them at, so cross-references between data, displaylists
     # and textures resolve exactly as the linker would resolve them.
-    group = [(OBJDIR + "/courses_%s_course_textures.linkonly.obj" % c, 0x05000000),
-             (OBJDIR + "/courses_%s_course_data.obj"              % c, 0x06000000),
-             (OBJDIR + "/courses_%s_course_displaylists.inc.obj"  % c, 0x07000000),
-             (OBJDIR + "/courses_%s_course_vertices.inc.obj"      % c, 0x0F000000)]
+    group = [(_resolve_obj(OBJDIR + "/courses_%s_course_textures.linkonly.obj" % c), 0x05000000),
+             (_resolve_obj(OBJDIR + "/courses_%s_course_data.obj"              % c), 0x06000000),
+             (_resolve_obj(OBJDIR + "/courses_%s_course_displaylists.inc.obj"  % c), 0x07000000),
+             (_resolve_obj(OBJDIR + "/courses_%s_course_vertices.inc.obj"      % c), 0x0F000000)]
     relocated, unres = coff_reloc.build(group)
     if unres:
         print("  %s: %d unresolved symbols" % (c, len(unres)))
 
     for objbase, suffix, compress in COURSE_PARTS:
-        obj = OBJDIR + "/courses_%s_%s.obj" % (c, objbase)
+        obj = _resolve_obj(OBJDIR + "/courses_%s_%s.obj" % (c, objbase))
         dst = os.path.join(OUT, c + suffix)
         blob = relocated.get(obj)
         if blob is None:
@@ -153,7 +163,7 @@ for d in sorted(glob.glob("courses/*/")):
         vtx = io.open(dst + ".mio0", "rb").read()
         os.remove(dst + ".mio0")
         pad = (-len(vtx)) % 4
-        packed = relocated.get(OBJDIR + "/courses_%s_course_displaylists.inc.obj" % c, b"")
+        packed = relocated.get(_resolve_obj(OBJDIR + "/courses_%s_course_displaylists.inc.obj" % c), b"")
         io.open(dst, "wb").write(vtx + bytes(pad) + packed)
         split = len(vtx) + pad
         want = PACKOFFS.get(c)
