@@ -68,6 +68,13 @@ extern "C" {
 #define TR_MAX_VERTS    8192
 #define MAX_BATCH        768
 
+/* Max vertices per DrawVerticesUP call. One call is a single GPU Begin/End
+ * bracket, and libd3d8 cannot fence mid-bracket, so a bracket approaching the
+ * 512 KB push buffer (16384 verts at 8 FVF dwords/vertex) desyncs the pusher.
+ * 6144 is a multiple of 3 (whole triangles) and well under the 8192 half-buffer
+ * safe ceiling; xb_flush_bucket splits larger batches to this size. */
+#define XB_MAX_DRAW_VERTS 6144u
+
 /* Translucent model: submission order, honouring Z_UPD, as the N64 and the PC
  * port do. The Dreamcast reorders instead, but only because the PVR autosorts
  * translucency per pixel in hardware.
@@ -780,8 +787,28 @@ static void xb_flush_bucket(XbBucket *b, int kind, int backdrops) {
             continue;
         }
         xb_apply_state(&bb->st, kind, 0);
-        sDev->DrawVerticesUP(D3DPT_TRIANGLELIST, bb->count,
-                             &b->verts[bb->start], sizeof(dc_fast_t));
+
+        /* A single DrawVerticesUP is one GPU Begin/End bracket. libd3d8 cannot
+         * insert a fence inside a bracket, so a bracket whose inline vertex data
+         * approaches/exceeds the 512 KB push buffer makes the pusher wrap over
+         * commands the GPU has not retired yet -> NV2A "Graphics Parse error"
+         * (reproduced by Platform/xbox/drawup_stress). dc_fast_t is 8 FVF dwords
+         * / vertex, so the buffer holds 16384 verts and the documented safe
+         * ceiling is half that (8192). Split large batches on triangle
+         * boundaries, well under the limit. bb->count is a multiple of 3 and
+         * XB_MAX_DRAW_VERTS is too, so every chunk stays whole-triangle. */
+        {
+            const dc_fast_t *vsrc = &b->verts[bb->start];
+            uint32_t remaining = (uint32_t) bb->count;
+            while (remaining > 0) {
+                const uint32_t chunk = (remaining < XB_MAX_DRAW_VERTS)
+                                     ? remaining : XB_MAX_DRAW_VERTS;
+                sDev->DrawVerticesUP(D3DPT_TRIANGLELIST, chunk,
+                                     vsrc, sizeof(dc_fast_t));
+                vsrc      += chunk;
+                remaining -= chunk;
+            }
+        }
     }
 }
 
