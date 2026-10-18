@@ -305,6 +305,15 @@ def ensure_torch():
     cmake = ensure_cmake()
     print("    building torch (one-off, a few minutes)")
 
+    # CMake 4.0 dropped compatibility with cmake_minimum_required(VERSION <3.5),
+    # and torch's FetchContent deps (yaml-cpp, ...) still declare older minimums,
+    # so a newer CMake already on PATH (e.g. `pip install cmake`) refuses to
+    # configure them. CMake 4.x reads this variable to treat those as 3.5; 3.x
+    # ignores it. It goes in the environment rather than as -D so it also reaches
+    # any re-configure `cmake --build` triggers, and 3.x does not warn about an
+    # unused variable. setdefault keeps a value the user exported themselves.
+    os.environ.setdefault("CMAKE_POLICY_VERSION_MINIMUM", "3.5")
+
     # Built cross-platform with RXDK's host-capable clang + Ninja (no MSBuild):
     # clang/clang++ with its own libc++ compiles torch's C++20 on every OS -- on
     # Windows through the mingw sysroot bundled in the RXDK LLVM package, on
